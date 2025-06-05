@@ -395,8 +395,4 @@ python -m uvicorn src.api.endpoints:app --reload --host 0.0.0.0 --port 8000
 
 MIT License - see LICENSE file for details
 
-## Support
 
-For issues and questions:
-- GitHub Issues: https://github.com/panic80/HanRAG/issues
-- Documentation: See `CLAUDE.md` for detailed technical information
