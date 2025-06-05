@@ -34,7 +34,7 @@ A production-ready Retrieval Augmented Generation (RAG) system integrated with M
 
 1. **Clone and Setup**
    ```bash
-   git clone https://github.com/panic80/HanRAG.git
+   git clone https://github.com/hannaparks/HanRAG.git
    cd HanRAG
    chmod +x scripts/*.sh
    ./scripts/start_local.sh
