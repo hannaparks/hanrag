@@ -1,0 +1,20 @@
+[Unit]
+Description=New RAG Monitoring Dashboard
+After=network.target
+Wants=newmmrag.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/newmmrag
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONPATH=/root/newmmrag
+ExecStart=/usr/bin/python3 /root/newmmrag/start_monitoring.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF < /dev/null

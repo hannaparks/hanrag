@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration - V3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text: #0a0a0a;
+            --text-muted: #737373;
+            --border: #e5e5e5;
+            --accent: #0a0a0a;
+            --accent-hover: #262626;
+            --success: #16a34a;
+            --error: #dc2626;
+            --radius: 4px;
+        }
+        
+        body {
+            font-family: -apple-system, system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        /* Minimal Header */
+        .header {
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+        
+        .header-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        /* Section */
+        .section {
+            margin-bottom: 3rem;
+        }
+        
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .section-description {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        /* Form Elements */
+        .field-group {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .field-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .field-input,
+        .field-select {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: border-color 0.15s;
+        }
+        
+        .field-input:focus,
+        .field-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .field-help {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* Two Column Layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        /* Password Field */
+        .password-field {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .password-toggle:hover {
+            color: var(--text);
+        }
+        
+        /* Range Slider */
+        .range-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .range-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        
+        .range-value {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+        }
+        
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .range-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        /* Checkbox */
+        .checkbox-field {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+        
+        .checkbox-input {
+            width: 16px;
+            height: 16px;
+            margin-top: 0.125rem;
+            accent-color: var(--accent);
+        }
+        
+        .checkbox-label {
+            flex: 1;
+        }
+        
+        .checkbox-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+        
+        .checkbox-description {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 3rem 0;
+        }
+        
+        /* Actions */
+        .actions {
+            position: sticky;
+            bottom: 0;
+            background: var(--bg);
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: var(--surface);
+            color: var(--text);
+        }
+        
+        .btn:hover {
+            background: var(--bg);
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+        
+        /* Alert */
+        .alert {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .alert-success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+        
+        .alert-error {
+            border-color: var(--error);
+            color: var(--error);
+        }
+        
+        /* Collapsible Sections */
+        .collapsible {
+            margin-bottom: 1rem;
+        }
+        
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .collapsible-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .collapsible-icon {
+            transition: transform 0.2s;
+        }
+        
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+        
+        .collapsible-content {
+            display: none;
+            padding-top: 0.5rem;
+        }
+        
+        .collapsible.open .collapsible-content {
+            display: block;
+        }
+        
+        @media (max-width: 640px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                padding: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">RAG Configuration</div>
+            <div class="status">
+                <span class="status-dot"></span>
+                <span id="status-text">Connected</span>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <form id="config-form">
+            <!-- API Keys Section -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">API Keys</h2>
+                    <p class="section-description">Configure your AI provider credentials</p>
+                </div>
+                
+                <div class="field-group">
+                    <div class="field">
+                        <label class="field-label">OpenAI API Key</label>
+                        <div class="password-field">
+                            <input type="password" class="field-input" id="openai-api-key" name="openai_api_key" placeholder="sk-...">
+                            <button type="button" class="password-toggle" onclick="togglePassword('openai-api-key')">Show</button>
+                        </div>
+                        <span class="field-help">Used for embeddings and vector search</span>
+                    </div>
+                    
+                    <div class="field">
+                        <label class="field-label">Anthropic API Key</label>
+                        <div class="password-field">
+                            <input type="password" class="field-input" id="anthropic-api-key" name="anthropic_api_key" placeholder="sk-ant-...">
+                            <button type="button" class="password-toggle" onclick="togglePassword('anthropic-api-key')">Show</button>
+                        </div>
+                        <span class="field-help">Used for Claude-powered generation</span>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="divider"></div>
+            
+            <!-- Mattermost Section -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Mattermost Integration</h2>
+                    <p class="section-description">Connect to your Mattermost server</p>
+                </div>
+                
+                <div class="field-group">
+                    <div class="field">
+                        <label class="field-label">Server URL</label>
+                        <input type="url" class="field-input" id="mattermost-url" name="mattermost_url" placeholder="https://your-mattermost.com">
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="field">
+                            <label class="field-label">Personal Access Token</label>
+                            <input type="password" class="field-input" id="mattermost-pat" name="mattermost_personal_access_token" placeholder="Token">
+                        </div>
+                        <div class="field">
+                            <label class="field-label">/inject Command Token</label>
+                            <input type="password" class="field-input" id="inject-token" name="mattermost_inject_token" placeholder="Token">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="divider"></div>
+            
+            <!-- Embedding Configuration -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Embedding Configuration</h2>
+                    <p class="section-description">Control how text is converted to vectors</p>
+                </div>
+                
+                <div class="field-group">
+                    <div class="field">
+                        <label class="field-label">Embedding Model</label>
+                        <select class="field-select" id="embedding-model" name="embedding_model">
+                            <option value="text-embedding-3-small">text-embedding-3-small (Fast)</option>
+                            <option value="text-embedding-3-large">text-embedding-3-large (Accurate)</option>
+                            <option value="text-embedding-ada-002">text-embedding-ada-002 (Legacy)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="range-field">
+                        <div class="range-header">
+                            <label class="field-label">Max Tokens per Chunk</label>
+                            <span class="range-value" id="max-tokens-value">512</span>
+                        </div>
+                        <input type="range" class="range-slider" id="max-tokens" name="max_tokens" min="100" max="2000" value="512">
+                        <span class="field-help">Larger chunks preserve more context but may reduce precision</span>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="divider"></div>
+            
+            <!-- Retrieval Settings -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Retrieval Settings</h2>
+                    <p class="section-description">Configure search and ranking behavior</p>
+                </div>
+                
+                <div class="field-group">
+                    <div class="grid-2">
+                        <div class="field">
+                            <label class="field-label">Top K Results</label>
+                            <input type="number" class="field-input" id="top-k" name="top_k" value="50">
+                            <span class="field-help">Initial retrieval count</span>
+                        </div>
+                        <div class="field">
+                            <label class="field-label">Rerank Top N</label>
+                            <input type="number" class="field-input" id="rerank-top-n" name="rerank_top_n" value="25">
+                            <span class="field-help">Final results after reranking</span>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-field">
+                        <input type="checkbox" class="checkbox-input" id="use-hybrid-search" name="use_hybrid_search" checked>
+                        <div class="checkbox-label">
+                            <div class="checkbox-title">Enable Hybrid Search</div>
+                            <div class="checkbox-description">Combines vector similarity with keyword matching for improved results</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Settings -->
+                    <div class="collapsible">
+                        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                            <span class="collapsible-title">Advanced Retrieval Settings</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="grid-2">
+                                <div class="range-field">
+                                    <div class="range-header">
+                                        <label class="field-label">Vector Weight</label>
+                                        <span class="range-value" id="vector-weight-value">0.7</span>
+                                    </div>
+                                    <input type="range" class="range-slider" id="vector-weight" name="vector_weight" min="0" max="1" step="0.1" value="0.7">
+                                </div>
+                                <div class="range-field">
+                                    <div class="range-header">
+                                        <label class="field-label">BM25 Weight</label>
+                                        <span class="range-value" id="bm25-weight-value">0.3</span>
+                                    </div>
+                                    <input type="range" class="range-slider" id="bm25-weight" name="bm25_weight" min="0" max="1" step="0.1" value="0.3">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="divider"></div>
+            
+            <!-- Generation Configuration -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Generation Settings</h2>
+                    <p class="section-description">Configure AI response generation</p>
+                </div>
+                
+                <div class="field-group">
+                    <div class="field">
+                        <label class="field-label">Claude Model</label>
+                        <select class="field-select" id="generation-model" name="generation_model">
+                            <option value="claude-opus-4-20250514">Claude Opus 4</option>
+                            <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+                            <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                            <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="field">
+                            <label class="field-label">Max Response Tokens</label>
+                            <input type="number" class="field-input" id="generation-max-tokens" name="generation_max_tokens" value="4096">
+                            <span class="field-help">Maximum length of responses</span>
+                        </div>
+                        <div class="range-field">
+                            <div class="range-header">
+                                <label class="field-label">Temperature</label>
+                                <span class="range-value" id="temperature-value">0.1</span>
+                            </div>
+                            <input type="range" class="range-slider" id="temperature" name="temperature" min="0" max="1" step="0.01" value="0.1">
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-field" id="hybrid-mode-field" style="display: none;">
+                        <input type="checkbox" class="checkbox-input" id="enable-hybrid-mode" name="enable_hybrid_mode">
+                        <div class="checkbox-label">
+                            <div class="checkbox-title">Enable Hybrid Mode</div>
+                            <div class="checkbox-description">Claude 4 only - Enables extended thinking for complex reasoning tasks</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </form>
+        
+        <div class="actions">
+            <button type="button" class="btn" onclick="loadConfig()">Reset</button>
+            <button type="submit" class="btn btn-primary" form="config-form">Save Changes</button>
+        </div>
+    </div>
+    
+    <div id="alert" class="alert"></div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Update range values
+        document.querySelectorAll('.range-slider').forEach(input => {
+            const valueDisplay = document.getElementById(input.id + '-value');
+            if (valueDisplay) {
+                input.addEventListener('input', () => {
+                    valueDisplay.textContent = input.value;
+                });
+            }
+        });
+        
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const button = input.parentElement.querySelector('.password-toggle');
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                button.textContent = 'Show';
+            }
+        }
+        
+        function toggleCollapsible(header) {
+            header.parentElement.classList.toggle('open');
+        }
+        
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Update status
+                document.getElementById('status-text').textContent = config.environment === 'production' ? 'Production' : 'Development';
+                
+                // Populate form fields
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    document.getElementById('max-tokens').value = config.embedding.max_tokens || 512;
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    document.getElementById('use-hybrid-search').checked = config.retrieval.use_hybrid_search !== false;
+                    document.getElementById('vector-weight').value = config.retrieval.vector_weight || 0.7;
+                    document.getElementById('bm25-weight').value = config.retrieval.bm25_weight || 0.3;
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                    document.getElementById('temperature').value = config.generation.temperature || 0.1;
+                    document.getElementById('enable-hybrid-mode').checked = config.generation.enable_hybrid_mode || false;
+                }
+                
+                // Update range displays
+                document.querySelectorAll('.range-slider').forEach(input => {
+                    const valueDisplay = document.getElementById(input.id + '-value');
+                    if (valueDisplay) {
+                        valueDisplay.textContent = input.value;
+                    }
+                });
+                
+            } catch (error) {
+                showAlert('Failed to load configuration: ' + error.message, 'error');
+            }
+        }
+        
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const config = {
+                embedding: {
+                    model: formData.get('embedding_model'),
+                    max_tokens: parseInt(formData.get('max_tokens'))
+                },
+                retrieval: {
+                    top_k: parseInt(formData.get('top_k')),
+                    rerank_top_n: parseInt(formData.get('rerank_top_n')),
+                    use_hybrid_search: formData.has('use_hybrid_search'),
+                    vector_weight: parseFloat(formData.get('vector_weight')),
+                    bm25_weight: parseFloat(formData.get('bm25_weight'))
+                },
+                generation: {
+                    model: formData.get('generation_model'),
+                    max_tokens: parseInt(formData.get('generation_max_tokens')),
+                    temperature: parseFloat(formData.get('temperature')),
+                    enable_hybrid_mode: formData.has('enable_hybrid_mode')
+                },
+                openai_api_key: formData.get('openai_api_key'),
+                anthropic_api_key: formData.get('anthropic_api_key'),
+                mattermost_url: formData.get('mattermost_url'),
+                mattermost_personal_access_token: formData.get('mattermost_personal_access_token'),
+                mattermost_inject_token: formData.get('mattermost_inject_token')
+            };
+            
+            // Simulate save
+            showAlert('Configuration saved successfully!', 'success');
+        });
+        
+        // Handle model selection
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const hybridField = document.getElementById('hybrid-mode-field');
+            if (e.target.value.includes('claude-opus-4') || e.target.value.includes('claude-sonnet-4')) {
+                hybridField.style.display = 'block';
+            } else {
+                hybridField.style.display = 'none';
+                document.getElementById('enable-hybrid-mode').checked = false;
+            }
+        });
+        
+        // Load on start
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            document.getElementById('generation-model').dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+# Example Prometheus configuration for RAG system monitoring
+# 
+# To use:
+# 1. Copy this file to prometheus.yml
+# 2. Update the targets to match your deployment
+# 3. Run Prometheus with: prometheus --config.file=prometheus.yml
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # RAG System metrics
+  - job_name: 'rag-system'
+    static_configs:
+      # Local development
+      - targets: ['localhost:8000']
+        labels:
+          environment: 'development'
+      
+      # Production (update with your actual host)
+      # - targets: ['168.231.68.82:8000']
+      #   labels:
+      #     environment: 'production'
+    
+    # Metrics path
+    metrics_path: '/metrics'
+    
+    # Optional: Add authentication if required
+    # bearer_token: 'your-api-key-here'
+    
+  # Optional: Node exporter for system metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+
+# Alerting rules (optional)
+# rule_files:
+#   - 'alerts.yml'
+
+# Alertmanager configuration (optional)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ['localhost:9093']

@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration - V8</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --red: #FF0000;
+            --yellow: #FFFF00;
+            --blue: #0000FF;
+            --green: #00FF00;
+            --gray: #808080;
+            --light-gray: #D0D0D0;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', monospace;
+            background: var(--white);
+            color: var(--black);
+            line-height: 1.2;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+        
+        /* Brutalist Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 39px, var(--black) 39px, var(--black) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, var(--black) 39px, var(--black) 40px);
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Massive Header */
+        .brutal-header {
+            background: var(--black);
+            color: var(--white);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .massive-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            line-height: 0.9;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .massive-title span {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--black);
+            padding: 0 0.2em;
+            transform: rotate(-2deg);
+        }
+        
+        .header-info {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .info-block {
+            background: var(--red);
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+        }
+        
+        /* Navigation */
+        .brutal-nav {
+            background: var(--yellow);
+            border-top: 4px solid var(--black);
+            border-bottom: 4px solid var(--black);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .nav-item {
+            flex: 1;
+            min-width: 150px;
+            background: transparent;
+            border: none;
+            border-right: 4px solid var(--black);
+            padding: 1.5rem 1rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.1s;
+            position: relative;
+        }
+        
+        .nav-item:last-child {
+            border-right: none;
+        }
+        
+        .nav-item:hover {
+            background: var(--black);
+            color: var(--yellow);
+        }
+        
+        .nav-item.active {
+            background: var(--red);
+            color: var(--white);
+        }
+        
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 8px solid var(--red);
+        }
+        
+        /* Main Container */
+        .brutal-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Brutal Cards */
+        .brutal-section {
+            background: var(--white);
+            border: 4px solid var(--black);
+            margin-bottom: 2rem;
+            position: relative;
+            box-shadow: 8px 8px 0 var(--black);
+        }
+        
+        .section-header {
+            background: var(--black);
+            color: var(--white);
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .section-number {
+            position: absolute;
+            top: -20px;
+            right: 20px;
+            background: var(--red);
+            color: var(--white);
+            font-size: 3rem;
+            font-weight: 700;
+            padding: 0 1rem;
+            line-height: 1;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+        
+        .section-body {
+            padding: 2rem;
+        }
+        
+        /* Form Elements */
+        .brutal-field {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .brutal-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            background: var(--yellow);
+            color: var(--black);
+            padding: 0.5rem;
+            display: inline-block;
+        }
+        
+        .brutal-input,
+        .brutal-select {
+            width: 100%;
+            padding: 1rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            background: var(--white);
+            border: 3px solid var(--black);
+            transition: all 0.1s;
+        }
+        
+        .brutal-input:focus,
+        .brutal-select:focus {
+            outline: none;
+            background: var(--light-gray);
+            box-shadow: 4px 4px 0 var(--black);
+            transform: translate(-2px, -2px);
+        }
+        
+        .brutal-input::placeholder {
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Password Field */
+        .password-group {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            padding: 0 1.5rem;
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            font-family: inherit;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        
+        .password-toggle:hover {
+            background: var(--red);
+        }
+        
+        /* Toggle Switch */
+        .brutal-toggle-field {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 1rem;
+            background: var(--light-gray);
+            border: 3px solid var(--black);
+        }
+        
+        .brutal-toggle {
+            position: relative;
+            width: 80px;
+            height: 40px;
+            cursor: pointer;
+        }
+        
+        .brutal-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--white);
+            border: 3px solid var(--black);
+            transition: all 0.2s;
+        }
+        
+        .toggle-slider::before {
+            content: 'OFF';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+        
+        .toggle-handle {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 28px;
+            height: 28px;
+            background: var(--red);
+            border: 3px solid var(--black);
+            transition: all 0.2s;
+        }
+        
+        input:checked + .toggle-slider {
+            background: var(--green);
+        }
+        
+        input:checked + .toggle-slider::before {
+            content: 'ON';
+            left: auto;
+            right: 8px;
+        }
+        
+        input:checked + .toggle-slider .toggle-handle {
+            transform: translateX(-44px);
+            background: var(--black);
+        }
+        
+        /* Range Slider */
+        .brutal-range-field {
+            margin-bottom: 2rem;
+        }
+        
+        .range-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .range-value {
+            background: var(--yellow);
+            color: var(--black);
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            border: 3px solid var(--black);
+        }
+        
+        .brutal-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 20px;
+            background: var(--white);
+            border: 3px solid var(--black);
+            outline: none;
+        }
+        
+        .brutal-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 40px;
+            height: 40px;
+            background: var(--red);
+            border: 3px solid var(--black);
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--black);
+        }
+        
+        .brutal-range::-moz-range-thumb {
+            width: 40px;
+            height: 40px;
+            background: var(--red);
+            border: 3px solid var(--black);
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--black);
+        }
+        
+        /* Grid Layout */
+        .brutal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        /* Big Buttons */
+        .brutal-actions {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .brutal-button {
+            flex: 1;
+            min-width: 200px;
+            padding: 1.5rem 3rem;
+            font-family: inherit;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--white);
+            color: var(--black);
+            border: 4px solid var(--black);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.1s;
+            box-shadow: 6px 6px 0 var(--black);
+        }
+        
+        .brutal-button:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 9px 9px 0 var(--black);
+        }
+        
+        .brutal-button:active {
+            transform: translate(0, 0);
+            box-shadow: 3px 3px 0 var(--black);
+        }
+        
+        .brutal-button.primary {
+            background: var(--red);
+            color: var(--white);
+        }
+        
+        .brutal-button.secondary {
+            background: var(--yellow);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: brutalSlide 0.3s ease;
+        }
+        
+        @keyframes brutalSlide {
+            from { 
+                transform: translateX(20px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Alert */
+        .brutal-alert {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--green);
+            border: 4px solid var(--black);
+            padding: 1.5rem 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            box-shadow: 6px 6px 0 var(--black);
+            display: none;
+            z-index: 1000;
+            animation: brutalBounce 0.3s ease;
+        }
+        
+        @keyframes brutalBounce {
+            0% { transform: scale(0) rotate(45deg); }
+            70% { transform: scale(1.1) rotate(-5deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+        
+        /* Status Bar */
+        .status-bar {
+            background: var(--black);
+            color: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            border-bottom: 4px solid var(--yellow);
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            background: var(--green);
+            border: 3px solid var(--white);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        @media (max-width: 768px) {
+            .massive-title {
+                font-size: 3rem;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+            }
+            
+            .nav-item {
+                border-right: none;
+                border-bottom: 4px solid var(--black);
+            }
+            
+            .brutal-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .brutal-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-item">
+            <div class="status-indicator"></div>
+            <span>SYSTEM ONLINE</span>
+        </div>
+        <div class="status-item">
+            <span>VERSION 8.0 BRUTALIST EDITION</span>
+        </div>
+    </div>
+    
+    <!-- Header -->
+    <header class="brutal-header">
+        <div class="header-content">
+            <h1 class="massive-title">
+                RAG<br>
+                <span>CONFIG</span><br>
+                SYSTEM
+            </h1>
+            <div class="header-info">
+                <div class="info-block">PRODUCTION MODE</div>
+                <div class="info-block">2024</div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Navigation -->
+    <nav class="brutal-nav">
+        <div class="nav-container">
+            <button class="nav-item active" onclick="showTab('keys')">API KEYS</button>
+            <button class="nav-item" onclick="showTab('models')">MODELS</button>
+            <button class="nav-item" onclick="showTab('search')">SEARCH</button>
+            <button class="nav-item" onclick="showTab('integrate')">INTEGRATE</button>
+            <button class="nav-item" onclick="showTab('advanced')">ADVANCED</button>
+        </div>
+    </nav>
+    
+    <div class="brutal-container">
+        <form id="config-form">
+            <!-- API Keys Tab -->
+            <div id="keys" class="tab-content active">
+                <div class="brutal-section">
+                    <div class="section-header">
+                        <div class="section-number">01</div>
+                        <h2 class="section-title">Authentication Credentials</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="brutal-field">
+                            <label class="brutal-label">OPENAI API KEY</label>
+                            <div class="password-group">
+                                <input type="password" class="brutal-input" id="openai-api-key" name="openai_api_key" placeholder="ENTER YOUR KEY">
+                                <button type="button" class="password-toggle" onclick="togglePassword('openai-api-key')">SHOW</button>
+                            </div>
+                        </div>
+                        
+                        <div class="brutal-field">
+                            <label class="brutal-label">ANTHROPIC API KEY</label>
+                            <div class="password-group">
+                                <input type="password" class="brutal-input" id="anthropic-api-key" name="anthropic_api_key" placeholder="ENTER YOUR KEY">
+                                <button type="button" class="password-toggle" onclick="togglePassword('anthropic-api-key')">SHOW</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Models Tab -->
+            <div id="models" class="tab-content">
+                <div class="brutal-section">
+                    <div class="section-header">
+                        <div class="section-number">02</div>
+                        <h2 class="section-title">AI Model Configuration</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="brutal-field">
+                            <label class="brutal-label">EMBEDDING MODEL</label>
+                            <select class="brutal-select" id="embedding-model" name="embedding_model">
+                                <option value="">SELECT MODEL</option>
+                                <option value="text-embedding-3-small">TEXT-EMBEDDING-3-SMALL</option>
+                                <option value="text-embedding-3-large">TEXT-EMBEDDING-3-LARGE</option>
+                                <option value="text-embedding-ada-002">TEXT-EMBEDDING-ADA-002</option>
+                            </select>
+                        </div>
+                        
+                        <div class="brutal-range-field">
+                            <div class="range-header">
+                                <label class="brutal-label">MAX TOKENS PER CHUNK</label>
+                                <div class="range-value" id="max-tokens-value">512</div>
+                            </div>
+                            <input type="range" class="brutal-range" id="max-tokens" name="max_tokens" min="100" max="2000" value="512">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="brutal-section">
+                    <div class="section-header">
+                        <div class="section-number">03</div>
+                        <h2 class="section-title">Generation Settings</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="brutal-field">
+                            <label class="brutal-label">CLAUDE MODEL</label>
+                            <select class="brutal-select" id="generation-model" name="generation_model">
+                                <option value="">SELECT MODEL</option>
+                                <option value="claude-opus-4-20250514">CLAUDE OPUS 4</option>
+                                <option value="claude-sonnet-4-20250514">CLAUDE SONNET 4</option>
+                                <option value="claude-3-5-sonnet-20241022">CLAUDE 3.5 SONNET</option>
+                            </select>
+                        </div>
+                        
+                        <div class="brutal-grid">
+                            <div class="brutal-field">
+                                <label class="brutal-label">MAX RESPONSE TOKENS</label>
+                                <input type="number" class="brutal-input" id="generation-max-tokens" name="generation_max_tokens" value="4096">
+                            </div>
+                            <div class="brutal-range-field">
+                                <div class="range-header">
+                                    <label class="brutal-label">TEMPERATURE</label>
+                                    <div class="range-value" id="temperature-value">0.1</div>
+                                </div>
+                                <input type="range" class="brutal-range" id="temperature" name="temperature" min="0" max="1" step="0.01" value="0.1">
+                            </div>
+                        </div>
+                        
+                        <div class="brutal-toggle-field" id="hybrid-mode-field" style="display: none;">
+                            <label class="brutal-label">HYBRID MODE (EXTENDED THINKING)</label>
+                            <label class="brutal-toggle">
+                                <input type="checkbox" id="enable-hybrid-mode" name="enable_hybrid_mode">
+                                <div class="toggle-slider">
+                                    <div class="toggle-handle"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Tab -->
+            <div id="search" class="tab-content">
+                <div class="brutal-section">
+                    <div class="section-header">
+                        <div class="section-number">04</div>
+                        <h2 class="section-title">Search & Retrieval</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="brutal-grid">
+                            <div class="brutal-field">
+                                <label class="brutal-label">TOP K RESULTS</label>
+                                <input type="number" class="brutal-input" id="top-k" name="top_k" value="50">
+                            </div>
+                            <div class="brutal-field">
+                                <label class="brutal-label">RERANK TOP N</label>
+                                <input type="number" class="brutal-input" id="rerank-top-n" name="rerank_top_n" value="25">
+                            </div>
+                        </div>
+                        
+                        <div class="brutal-toggle-field">
+                            <label class="brutal-label">ENABLE HYBRID SEARCH</label>
+                            <label class="brutal-toggle">
+                                <input type="checkbox" id="use-hybrid-search" name="use_hybrid_search" checked>
+                                <div class="toggle-slider">
+                                    <div class="toggle-handle"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Integration Tab -->
+            <div id="integrate" class="tab-content">
+                <div class="brutal-section">
+                    <div class="section-header">
+                        <div class="section-number">05</div>
+                        <h2 class="section-title">Mattermost Integration</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="brutal-field">
+                            <label class="brutal-label">SERVER URL</label>
+                            <input type="url" class="brutal-input" id="mattermost-url" name="mattermost_url" placeholder="HTTPS://YOUR-MATTERMOST.COM">
+                        </div>
+                        
+                        <div class="brutal-grid">
+                            <div class="brutal-field">
+                                <label class="brutal-label">PERSONAL ACCESS TOKEN</label>
+                                <input type="password" class="brutal-input" id="mattermost-pat" name="mattermost_personal_access_token" placeholder="TOKEN">
+                            </div>
+                            <div class="brutal-field">
+                                <label class="brutal-label">/INJECT COMMAND TOKEN</label>
+                                <input type="password" class="brutal-input" id="inject-token" name="mattermost_inject_token" placeholder="TOKEN">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Tab -->
+            <div id="advanced" class="tab-content">
+                <div class="brutal-section">
+                    <div class="section-header">
+                        <div class="section-number">06</div>
+                        <h2 class="section-title">Advanced Parameters</h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="brutal-grid">
+                            <div class="brutal-range-field">
+                                <div class="range-header">
+                                    <label class="brutal-label">VECTOR WEIGHT</label>
+                                    <div class="range-value" id="vector-weight-value">0.7</div>
+                                </div>
+                                <input type="range" class="brutal-range" id="vector-weight" name="vector_weight" min="0" max="1" step="0.1" value="0.7">
+                            </div>
+                            <div class="brutal-range-field">
+                                <div class="range-header">
+                                    <label class="brutal-label">BM25 WEIGHT</label>
+                                    <div class="range-value" id="bm25-weight-value">0.3</div>
+                                </div>
+                                <input type="range" class="brutal-range" id="bm25-weight" name="bm25_weight" min="0" max="1" step="0.1" value="0.3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Action Buttons -->
+        <div class="brutal-actions">
+            <button type="button" class="brutal-button secondary" onclick="loadConfig()">
+                RELOAD CONFIG
+            </button>
+            <button type="submit" class="brutal-button primary" form="config-form">
+                SAVE EVERYTHING
+            </button>
+        </div>
+    </div>
+    
+    <!-- Alert -->
+    <div id="alert" class="brutal-alert">
+        CONFIGURATION SAVED!
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Tab switching
+        function showTab(tabId) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Update range values
+        document.querySelectorAll('.brutal-range').forEach(input => {
+            const valueDisplay = document.getElementById(input.id + '-value');
+            if (valueDisplay) {
+                input.addEventListener('input', () => {
+                    valueDisplay.textContent = input.value;
+                });
+            }
+        });
+        
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const button = input.parentElement.querySelector('.password-toggle');
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'HIDE';
+            } else {
+                input.type = 'password';
+                button.textContent = 'SHOW';
+            }
+        }
+        
+        function showAlert() {
+            const alert = document.getElementById('alert');
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Populate fields
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    document.getElementById('max-tokens').value = config.embedding.max_tokens || 512;
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    document.getElementById('use-hybrid-search').checked = config.retrieval.use_hybrid_search !== false;
+                    document.getElementById('vector-weight').value = config.retrieval.vector_weight || 0.7;
+                    document.getElementById('bm25-weight').value = config.retrieval.bm25_weight || 0.3;
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                    document.getElementById('temperature').value = config.generation.temperature || 0.1;
+                }
+                
+                // Update range displays
+                document.querySelectorAll('.brutal-range').forEach(input => {
+                    const valueDisplay = document.getElementById(input.id + '-value');
+                    if (valueDisplay) {
+                        valueDisplay.textContent = input.value;
+                    }
+                });
+                
+                showAlert();
+            } catch (error) {
+                console.error('Failed to load configuration:', error);
+            }
+        }
+        
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showAlert();
+        });
+        
+        // Handle model selection
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const hybridField = document.getElementById('hybrid-mode-field');
+            if (e.target.value.includes('claude-opus-4') || e.target.value.includes('claude-sonnet-4')) {
+                hybridField.style.display = 'block';
+            } else {
+                hybridField.style.display = 'none';
+                document.getElementById('enable-hybrid-mode').checked = false;
+            }
+        });
+        
+        // Load on start
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            document.getElementById('generation-model').dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>

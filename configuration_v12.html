@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration - V12</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --gaming-bg: #0d1117;
+            --gaming-surface: #161b22;
+            --gaming-accent: #00d4ff;
+            --gaming-secondary: #ff6b35;
+            --gaming-success: #00ff88;
+            --gaming-danger: #ff4757;
+            --gaming-warning: #ffa726;
+            --gaming-text: #f0f6fc;
+            --gaming-text-dim: #8b949e;
+            --gaming-border: #30363d;
+            --gaming-purple: #9d4edd;
+            --gaming-pink: #f72585;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--gaming-bg);
+            color: var(--gaming-text);
+            line-height: 1.5;
+            font-size: 16px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, var(--gaming-accent) 0%, transparent 30%),
+                radial-gradient(circle at 80% 80%, var(--gaming-secondary) 0%, transparent 30%),
+                radial-gradient(circle at 40% 40%, var(--gaming-purple) 0%, transparent 30%);
+            opacity: 0.05;
+            z-index: -2;
+            animation: bgRotate 20s linear infinite;
+        }
+        
+        @keyframes bgRotate {
+            0% { transform: rotate(0deg) scale(1); }
+            100% { transform: rotate(360deg) scale(1.1); }
+        }
+        
+        /* Hexagon Pattern */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300d4ff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.1;
+            z-index: -1;
+            animation: patternMove 30s linear infinite;
+        }
+        
+        @keyframes patternMove {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(60px) translateY(60px); }
+        }
+        
+        /* Gaming Header */
+        .gaming-header {
+            background: linear-gradient(135deg, var(--gaming-surface) 0%, var(--gaming-bg) 100%);
+            border-bottom: 2px solid var(--gaming-accent);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gaming-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            animation: headerScan 3s linear infinite;
+        }
+        
+        @keyframes headerScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .gaming-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--gaming-accent), var(--gaming-purple));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--gaming-bg);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gaming-logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: logoShine 2s ease-in-out infinite;
+        }
+        
+        @keyframes logoShine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .title-section h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--gaming-accent), var(--gaming-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.25rem;
+        }
+        
+        .title-section p {
+            color: var(--gaming-text-dim);
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+        
+        .stats-display {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--gaming-accent);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gaming-accent);
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gaming-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Gaming Navigation */
+        .gaming-nav {
+            background: var(--gaming-surface);
+            border-bottom: 1px solid var(--gaming-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: var(--gaming-text-dim);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--gaming-accent), var(--gaming-purple));
+            transition: width 0.3s;
+            z-index: -1;
+        }
+        
+        .nav-tab:hover::before {
+            width: 100%;
+        }
+        
+        .nav-tab:hover {
+            color: var(--gaming-text);
+        }
+        
+        .nav-tab.active {
+            color: var(--gaming-accent);
+            border-bottom-color: var(--gaming-accent);
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        /* Main Container */
+        .gaming-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Gaming Cards */
+        .gaming-card {
+            background: var(--gaming-surface);
+            border: 1px solid var(--gaming-border);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+        
+        .gaming-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gaming-accent), var(--gaming-secondary), var(--gaming-purple));
+            background-size: 200% 100%;
+            animation: cardGlow 3s linear infinite;
+        }
+        
+        @keyframes cardGlow {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+        
+        .gaming-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--gaming-accent);
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2);
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gaming-border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--gaming-accent), var(--gaming-purple));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .card-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--gaming-text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.875rem;
+        }
+        
+        .gaming-input,
+        .gaming-select {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gaming-bg);
+            border: 2px solid var(--gaming-border);
+            border-radius: 8px;
+            color: var(--gaming-text);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .gaming-input:focus,
+        .gaming-select:focus {
+            outline: none;
+            border-color: var(--gaming-accent);
+            box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.1);
+            background: rgba(0, 212, 255, 0.05);
+        }
+        
+        .gaming-input::placeholder {
+            color: var(--gaming-text-dim);
+        }
+        
+        /* Password Field */
+        .password-field {
+            position: relative;
+        }
+        
+        .password-reveal {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--gaming-accent);
+            color: var(--gaming-bg);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        
+        .password-reveal:hover {
+            background: var(--gaming-secondary);
+        }
+        
+        /* Gaming Toggle */
+        .toggle-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--gaming-bg);
+            border: 2px solid var(--gaming-border);
+            border-radius: 8px;
+        }
+        
+        .toggle-info {
+            flex: 1;
+        }
+        
+        .toggle-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .toggle-desc {
+            font-size: 0.875rem;
+            color: var(--gaming-text-dim);
+        }
+        
+        .gaming-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .gaming-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gaming-border);
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        
+        .toggle-slider::before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background: var(--gaming-text);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        input:checked + .toggle-slider {
+            background: var(--gaming-accent);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        input:checked + .toggle-slider::before {
+            transform: translateX(30px);
+        }
+        
+        /* Gaming Slider */
+        .slider-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .slider-value {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            color: var(--gaming-accent);
+            background: var(--gaming-bg);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            border: 1px solid var(--gaming-accent);
+        }
+        
+        .gaming-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--gaming-border);
+            outline: none;
+            position: relative;
+        }
+        
+        .gaming-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gaming-accent), var(--gaming-purple));
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .gaming-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+        }
+        
+        .gaming-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gaming-accent), var(--gaming-purple));
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            border: none;
+        }
+        
+        /* Grid Layout */
+        .gaming-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        /* Action Buttons */
+        .action-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 3rem;
+            padding: 2rem 0;
+        }
+        
+        .gaming-btn {
+            padding: 1rem 2rem;
+            background: var(--gaming-bg);
+            border: 2px solid var(--gaming-accent);
+            color: var(--gaming-accent);
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .gaming-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .gaming-btn:hover::before {
+            left: 100%;
+        }
+        
+        .gaming-btn:hover {
+            background: var(--gaming-accent);
+            color: var(--gaming-bg);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .gaming-btn.primary {
+            background: linear-gradient(135deg, var(--gaming-accent), var(--gaming-secondary));
+            border-color: transparent;
+            color: var(--gaming-bg);
+        }
+        
+        .gaming-btn.primary:hover {
+            background: linear-gradient(135deg, var(--gaming-secondary), var(--gaming-purple));
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: gameEnter 0.5s ease;
+        }
+        
+        @keyframes gameEnter {
+            from { 
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Notification */
+        .gaming-notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--gaming-surface);
+            border: 2px solid var(--gaming-success);
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            color: var(--gaming-success);
+            font-weight: 600;
+            display: none;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.2);
+        }
+        
+        .gaming-notification.show {
+            display: block;
+            animation: notificationSlide 0.5s ease;
+        }
+        
+        @keyframes notificationSlide {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .stats-display {
+                justify-content: center;
+            }
+            
+            .gaming-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="gaming-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="gaming-logo">R</div>
+                <div class="title-section">
+                    <h1>RAG GAMING HUB</h1>
+                    <p>Configuration Dashboard v12.0</p>
+                </div>
+            </div>
+            <div class="stats-display">
+                <div class="stat-item">
+                    <div class="stat-value">99.8%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">15ms</div>
+                    <div class="stat-label">Latency</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">4.2K</div>
+                    <div class="stat-label">Queries/Day</div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Navigation -->
+    <nav class="gaming-nav">
+        <div class="nav-container">
+            <button class="nav-tab active" onclick="showTab('loadout')">LOADOUT</button>
+            <button class="nav-tab" onclick="showTab('weapons')">WEAPONS</button>
+            <button class="nav-tab" onclick="showTab('tactics')">TACTICS</button>
+            <button class="nav-tab" onclick="showTab('comms')">COMMS</button>
+            <button class="nav-tab" onclick="showTab('systems')">SYSTEMS</button>
+        </div>
+    </nav>
+    
+    <div class="gaming-container">
+        <form id="config-form">
+            <!-- Loadout Tab -->
+            <div id="loadout" class="tab-content active">
+                <div class="gaming-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔐</div>
+                        <h2 class="card-title">Player Authentication</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">OpenAI Access Key</label>
+                            <div class="password-field">
+                                <input type="password" class="gaming-input" id="openai-api-key" name="openai_api_key" placeholder="Enter your API key...">
+                                <button type="button" class="password-reveal" onclick="togglePassword('openai-api-key')">SHOW</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Anthropic Access Key</label>
+                            <div class="password-field">
+                                <input type="password" class="gaming-input" id="anthropic-api-key" name="anthropic_api_key" placeholder="Enter your API key...">
+                                <button type="button" class="password-reveal" onclick="togglePassword('anthropic-api-key')">SHOW</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Weapons Tab -->
+            <div id="weapons" class="tab-content">
+                <div class="gaming-card">
+                    <div class="card-header">
+                        <div class="card-icon">🧠</div>
+                        <h2 class="card-title">Neural Network Arsenal</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Embedding Model</label>
+                            <select class="gaming-select" id="embedding-model" name="embedding_model">
+                                <option value="">-- Select Weapon --</option>
+                                <option value="text-embedding-3-small">Lightning Strike (3-Small)</option>
+                                <option value="text-embedding-3-large">Heavy Artillery (3-Large)</option>
+                                <option value="text-embedding-ada-002">Classic Rifle (Ada-002)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <label class="form-label">Ammunition Count</label>
+                                <span class="slider-value" id="max-tokens-value">512</span>
+                            </div>
+                            <input type="range" class="gaming-slider" id="max-tokens" name="max_tokens" min="100" max="2000" value="512">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gaming-card">
+                    <div class="card-header">
+                        <div class="card-icon">⚡</div>
+                        <h2 class="card-title">AI Combat System</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">AI Fighter Class</label>
+                            <select class="gaming-select" id="generation-model" name="generation_model">
+                                <option value="">-- Choose Fighter --</option>
+                                <option value="claude-opus-4-20250514">Claude Opus 4 (Legend)</option>
+                                <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (Pro)</option>
+                                <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (Elite)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="gaming-grid">
+                            <div class="form-group">
+                                <label class="form-label">Max Combat Tokens</label>
+                                <input type="number" class="gaming-input" id="generation-max-tokens" name="generation_max_tokens" value="4096">
+                            </div>
+                            <div class="slider-field">
+                                <div class="slider-header">
+                                    <label class="form-label">Combat Creativity</label>
+                                    <span class="slider-value" id="temperature-value">0.1</span>
+                                </div>
+                                <input type="range" class="gaming-slider" id="temperature" name="temperature" min="0" max="1" step="0.01" value="0.1">
+                            </div>
+                        </div>
+                        
+                        <div class="toggle-field" id="hybrid-mode-field" style="display: none;">
+                            <div class="toggle-info">
+                                <div class="toggle-title">Ultra Instinct Mode</div>
+                                <div class="toggle-desc">Enables advanced tactical thinking for Claude 4 fighters</div>
+                            </div>
+                            <label class="gaming-toggle">
+                                <input type="checkbox" id="enable-hybrid-mode" name="enable_hybrid_mode">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tactics Tab -->
+            <div id="tactics" class="tab-content">
+                <div class="gaming-card">
+                    <div class="card-header">
+                        <div class="card-icon">🎯</div>
+                        <h2 class="card-title">Search Strategy</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="gaming-grid">
+                            <div class="form-group">
+                                <label class="form-label">Initial Scan Range</label>
+                                <input type="number" class="gaming-input" id="top-k" name="top_k" value="50">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Target Lock Count</label>
+                                <input type="number" class="gaming-input" id="rerank-top-n" name="rerank_top_n" value="25">
+                            </div>
+                        </div>
+                        
+                        <div class="toggle-field">
+                            <div class="toggle-info">
+                                <div class="toggle-title">Dual-Mode Targeting</div>
+                                <div class="toggle-desc">Combines vector and keyword scanning for superior accuracy</div>
+                            </div>
+                            <label class="gaming-toggle">
+                                <input type="checkbox" id="use-hybrid-search" name="use_hybrid_search" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comms Tab -->
+            <div id="comms" class="tab-content">
+                <div class="gaming-card">
+                    <div class="card-header">
+                        <div class="card-icon">📡</div>
+                        <h2 class="card-title">Communication Network</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Server URL</label>
+                            <input type="url" class="gaming-input" id="mattermost-url" name="mattermost_url" placeholder="https://your-game-server.com">
+                        </div>
+                        
+                        <div class="gaming-grid">
+                            <div class="form-group">
+                                <label class="form-label">Player Access Token</label>
+                                <input type="password" class="gaming-input" id="mattermost-pat" name="mattermost_personal_access_token">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Command Protocol Token</label>
+                                <input type="password" class="gaming-input" id="inject-token" name="mattermost_inject_token">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Systems Tab -->
+            <div id="systems" class="tab-content">
+                <div class="gaming-card">
+                    <div class="card-header">
+                        <div class="card-icon">⚙️</div>
+                        <h2 class="card-title">Advanced System Tuning</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="gaming-grid">
+                            <div class="slider-field">
+                                <div class="slider-header">
+                                    <label class="form-label">Vector Processing Power</label>
+                                    <span class="slider-value" id="vector-weight-value">0.7</span>
+                                </div>
+                                <input type="range" class="gaming-slider" id="vector-weight" name="vector_weight" min="0" max="1" step="0.1" value="0.7">
+                            </div>
+                            <div class="slider-field">
+                                <div class="slider-header">
+                                    <label class="form-label">Keyword Processing Power</label>
+                                    <span class="slider-value" id="bm25-weight-value">0.3</span>
+                                </div>
+                                <input type="range" class="gaming-slider" id="bm25-weight" name="bm25_weight" min="0" max="1" step="0.1" value="0.3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <button type="button" class="gaming-btn" onclick="loadConfig()">
+                RELOAD SETTINGS
+            </button>
+            <button type="submit" class="gaming-btn primary" form="config-form">
+                DEPLOY CONFIG
+            </button>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div id="notification" class="gaming-notification">
+        Configuration deployed successfully!
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Tab switching
+        function showTab(tabId) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Update slider values
+        document.querySelectorAll('.gaming-slider').forEach(input => {
+            const valueDisplay = document.getElementById(input.id + '-value');
+            if (valueDisplay) {
+                input.addEventListener('input', () => {
+                    valueDisplay.textContent = input.value;
+                });
+            }
+        });
+        
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const button = input.parentElement.querySelector('.password-reveal');
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'HIDE';
+            } else {
+                input.type = 'password';
+                button.textContent = 'SHOW';
+            }
+        }
+        
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Populate fields
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    document.getElementById('max-tokens').value = config.embedding.max_tokens || 512;
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    document.getElementById('use-hybrid-search').checked = config.retrieval.use_hybrid_search !== false;
+                    document.getElementById('vector-weight').value = config.retrieval.vector_weight || 0.7;
+                    document.getElementById('bm25-weight').value = config.retrieval.bm25_weight || 0.3;
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                    document.getElementById('temperature').value = config.generation.temperature || 0.1;
+                }
+                
+                // Update slider displays
+                document.querySelectorAll('.gaming-slider').forEach(input => {
+                    const valueDisplay = document.getElementById(input.id + '-value');
+                    if (valueDisplay) {
+                        valueDisplay.textContent = input.value;
+                    }
+                });
+                
+                showNotification();
+            } catch (error) {
+                console.error('Failed to load configuration:', error);
+            }
+        }
+        
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showNotification();
+        });
+        
+        // Handle model selection
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const hybridField = document.getElementById('hybrid-mode-field');
+            if (e.target.value.includes('claude-opus-4') || e.target.value.includes('claude-sonnet-4')) {
+                hybridField.style.display = 'flex';
+            } else {
+                hybridField.style.display = 'none';
+                document.getElementById('enable-hybrid-mode').checked = false;
+            }
+        });
+        
+        // Load on start
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            document.getElementById('generation-model').dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>

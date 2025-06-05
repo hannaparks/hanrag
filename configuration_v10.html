@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration - V10</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --paper: #faf8f3;
+            --ink: #1a1a1a;
+            --ink-light: #4a4a4a;
+            --ink-fade: #8a8a8a;
+            --accent: #c41230;
+            --gold: #d4af37;
+            --border: #e0e0e0;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Roboto', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        /* Newspaper Header */
+        .newspaper-header {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-bottom: 3px double var(--ink);
+            position: relative;
+        }
+        
+        .header-date {
+            font-size: 0.875rem;
+            color: var(--ink-light);
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+        
+        .newspaper-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .newspaper-title::before,
+        .newspaper-title::after {
+            content: '❦';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+        
+        .newspaper-title::before {
+            left: -2rem;
+        }
+        
+        .newspaper-title::after {
+            right: -2rem;
+        }
+        
+        .edition-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--ink-light);
+            margin-top: 0.5rem;
+        }
+        
+        .edition-info span {
+            position: relative;
+        }
+        
+        .edition-info span:not(:last-child)::after {
+            content: '•';
+            position: absolute;
+            right: -1rem;
+        }
+        
+        /* Navigation Bar */
+        .nav-bar {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 0;
+        }
+        
+        .nav-item {
+            padding: 0.5rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--paper);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .nav-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: var(--ink-fade);
+        }
+        
+        .nav-item:hover {
+            background: var(--accent);
+        }
+        
+        .nav-item.active {
+            background: var(--accent);
+            font-weight: 700;
+        }
+        
+        /* Main Layout */
+        .newspaper-layout {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        /* Section Headers */
+        .section-header {
+            margin-bottom: 2rem;
+            position: relative;
+            text-align: center;
+        }
+        
+        .section-header::before,
+        .section-header::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: calc(50% - 120px);
+            height: 1px;
+            background: var(--ink);
+        }
+        
+        .section-header::before {
+            left: 0;
+        }
+        
+        .section-header::after {
+            right: 0;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: var(--paper);
+            padding: 0 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        /* Columns Layout */
+        .columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .column {
+            border-right: 1px solid var(--border);
+            padding-right: 2rem;
+        }
+        
+        .column:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+        
+        /* Article Box */
+        .article-box {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .article-box:last-child {
+            border-bottom: none;
+        }
+        
+        .article-headline {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+        
+        .article-byline {
+            font-size: 0.75rem;
+            color: var(--ink-fade);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+        
+        /* Form Elements */
+        .form-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .field-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .newspaper-input,
+        .newspaper-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--paper);
+            border: 1px solid var(--ink);
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .newspaper-input:focus,
+        .newspaper-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(196, 18, 48, 0.1);
+        }
+        
+        .field-note {
+            font-size: 0.75rem;
+            color: var(--ink-fade);
+            font-style: italic;
+            margin-top: 0.25rem;
+        }
+        
+        /* Password Field */
+        .password-field {
+            position: relative;
+        }
+        
+        .show-password {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--ink);
+            color: var(--paper);
+            border: none;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .show-password:hover {
+            background: var(--accent);
+        }
+        
+        /* Toggle Switch - Editorial Style */
+        .toggle-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--paper);
+            border: 1px solid var(--ink);
+            margin-bottom: 1rem;
+        }
+        
+        .toggle-label {
+            font-weight: 500;
+        }
+        
+        .editorial-toggle {
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .editorial-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--ink-fade);
+            transition: all 0.3s;
+            border: 1px solid var(--ink);
+        }
+        
+        .toggle-slider::before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background: var(--paper);
+            transition: all 0.3s;
+        }
+        
+        input:checked + .toggle-slider {
+            background: var(--accent);
+        }
+        
+        input:checked + .toggle-slider::before {
+            transform: translateX(26px);
+        }
+        
+        /* Range Slider - Editorial */
+        .range-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .range-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .range-value {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .editorial-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .editorial-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--ink);
+            cursor: pointer;
+            border: 2px solid var(--paper);
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+        
+        .editorial-range::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--ink);
+            cursor: pointer;
+            border: 2px solid var(--paper);
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+        
+        /* Special Box */
+        .special-box {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .special-box::before,
+        .special-box::after {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            right: 1rem;
+            height: 3px;
+            background: var(--gold);
+        }
+        
+        .special-box::before {
+            top: 1rem;
+        }
+        
+        .special-box::after {
+            bottom: 1rem;
+        }
+        
+        .special-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Action Buttons */
+        .editorial-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 3rem 0;
+            padding: 2rem 0;
+            border-top: 3px double var(--ink);
+            border-bottom: 3px double var(--ink);
+        }
+        
+        .editorial-btn {
+            padding: 0.75rem 2rem;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 2px solid var(--ink);
+            background: var(--paper);
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .editorial-btn:hover {
+            background: var(--ink);
+            color: var(--paper);
+        }
+        
+        .editorial-btn.primary {
+            background: var(--accent);
+            color: var(--paper);
+            border-color: var(--accent);
+        }
+        
+        .editorial-btn.primary:hover {
+            background: var(--ink);
+            border-color: var(--ink);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Alert */
+        .editorial-alert {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--paper);
+            border: 2px solid var(--accent);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 8px var(--shadow);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .alert-headline {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Footer */
+        .newspaper-footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 3px double var(--ink);
+            margin-top: 4rem;
+            font-size: 0.75rem;
+            color: var(--ink-fade);
+        }
+        
+        @media (max-width: 768px) {
+            .columns {
+                grid-template-columns: 1fr;
+            }
+            
+            .column {
+                border-right: none;
+                padding-right: 0;
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 2rem;
+                margin-bottom: 2rem;
+            }
+            
+            .newspaper-title::before,
+            .newspaper-title::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="newspaper-header">
+        <div class="header-date">
+            <script>document.write(new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));</script>
+        </div>
+        <h1 class="newspaper-title">The RAG Tribune</h1>
+        <div class="edition-info">
+            <span>Volume X</span>
+            <span>Configuration Edition</span>
+            <span>Est. 2024</span>
+        </div>
+    </header>
+    
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <button class="nav-item active" onclick="showTab('front-page')">FRONT PAGE</button>
+            <button class="nav-item" onclick="showTab('credentials')">CREDENTIALS</button>
+            <button class="nav-item" onclick="showTab('technology')">TECHNOLOGY</button>
+            <button class="nav-item" onclick="showTab('search-ops')">SEARCH OPS</button>
+            <button class="nav-item" onclick="showTab('connections')">CONNECTIONS</button>
+        </div>
+    </nav>
+    
+    <div class="newspaper-layout">
+        <form id="config-form">
+            <!-- Front Page Tab -->
+            <div id="front-page" class="tab-content active">
+                <div class="section-header">
+                    <h2 class="section-title">Breaking Configuration</h2>
+                </div>
+                
+                <div class="columns">
+                    <div class="column">
+                        <article class="article-box">
+                            <h3 class="article-headline">System Status Reports All Green</h3>
+                            <p class="article-byline">By System Monitor • Just Now</p>
+                            <p>Latest reports indicate all RAG systems are operating at peak efficiency. Configuration panels show optimal performance across all sectors.</p>
+                        </article>
+                        
+                        <article class="article-box">
+                            <h3 class="article-headline">API Integration Reaches New Heights</h3>
+                            <p class="article-byline">By Tech Desk • 5 Minutes Ago</p>
+                            <p>Recent improvements to the API configuration interface have streamlined the setup process for administrators worldwide.</p>
+                        </article>
+                    </div>
+                    
+                    <div class="column">
+                        <div class="special-box">
+                            <h3 class="special-title">Quick Stats</h3>
+                            <p style="font-size: 2rem; font-weight: 700;">98.5%</p>
+                            <p>System Uptime This Month</p>
+                        </div>
+                        
+                        <article class="article-box">
+                            <h3 class="article-headline">New Claude Models Available</h3>
+                            <p class="article-byline">By AI Correspondent • 1 Hour Ago</p>
+                            <p>Anthropic announces availability of Claude Opus 4 and Sonnet 4 models for enhanced generation capabilities.</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Credentials Tab -->
+            <div id="credentials" class="tab-content">
+                <div class="section-header">
+                    <h2 class="section-title">Security Desk</h2>
+                </div>
+                
+                <div class="columns">
+                    <div class="column">
+                        <article class="article-box">
+                            <h3 class="article-headline">API Key Management</h3>
+                            <p class="article-byline">Secure Access Required</p>
+                            
+                            <div class="form-field">
+                                <label class="field-label">OpenAI Credentials</label>
+                                <div class="password-field">
+                                    <input type="password" class="newspaper-input" id="openai-api-key" name="openai_api_key" placeholder="Enter secure key">
+                                    <button type="button" class="show-password" onclick="togglePassword('openai-api-key')">Show</button>
+                                </div>
+                                <p class="field-note">Required for embedding generation</p>
+                            </div>
+                        </article>
+                    </div>
+                    
+                    <div class="column">
+                        <article class="article-box">
+                            <h3 class="article-headline">Anthropic Integration</h3>
+                            <p class="article-byline">Advanced AI Access</p>
+                            
+                            <div class="form-field">
+                                <label class="field-label">Anthropic Credentials</label>
+                                <div class="password-field">
+                                    <input type="password" class="newspaper-input" id="anthropic-api-key" name="anthropic_api_key" placeholder="Enter secure key">
+                                    <button type="button" class="show-password" onclick="togglePassword('anthropic-api-key')">Show</button>
+                                </div>
+                                <p class="field-note">Powers Claude AI responses</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Technology Tab -->
+            <div id="technology" class="tab-content">
+                <div class="section-header">
+                    <h2 class="section-title">Technology Section</h2>
+                </div>
+                
+                <div class="columns">
+                    <div class="column">
+                        <article class="article-box">
+                            <h3 class="article-headline">Embedding Model Selection</h3>
+                            <p class="article-byline">Neural Network Configuration</p>
+                            
+                            <div class="form-field">
+                                <label class="field-label">Model Choice</label>
+                                <select class="newspaper-select" id="embedding-model" name="embedding_model">
+                                    <option value="">Select Model</option>
+                                    <option value="text-embedding-3-small">Compact Model (Fast)</option>
+                                    <option value="text-embedding-3-large">Large Model (Accurate)</option>
+                                    <option value="text-embedding-ada-002">Legacy Ada Model</option>
+                                </select>
+                            </div>
+                            
+                            <div class="range-field">
+                                <div class="range-header">
+                                    <label class="field-label">Token Limit</label>
+                                    <span class="range-value" id="max-tokens-value">512</span>
+                                </div>
+                                <input type="range" class="editorial-range" id="max-tokens" name="max_tokens" min="100" max="2000" value="512">
+                            </div>
+                        </article>
+                    </div>
+                    
+                    <div class="column">
+                        <article class="article-box">
+                            <h3 class="article-headline">Generation Settings</h3>
+                            <p class="article-byline">Response Configuration</p>
+                            
+                            <div class="form-field">
+                                <label class="field-label">AI Model</label>
+                                <select class="newspaper-select" id="generation-model" name="generation_model">
+                                    <option value="">Select Model</option>
+                                    <option value="claude-opus-4-20250514">Claude Opus 4</option>
+                                    <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+                                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-field">
+                                <label class="field-label">Max Tokens</label>
+                                <input type="number" class="newspaper-input" id="generation-max-tokens" name="generation_max_tokens" value="4096">
+                            </div>
+                            
+                            <div class="toggle-field" id="hybrid-mode-field" style="display: none;">
+                                <span class="toggle-label">Hybrid Mode</span>
+                                <label class="editorial-toggle">
+                                    <input type="checkbox" id="enable-hybrid-mode" name="enable_hybrid_mode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Ops Tab -->
+            <div id="search-ops" class="tab-content">
+                <div class="section-header">
+                    <h2 class="section-title">Search Operations</h2>
+                </div>
+                
+                <article class="article-box">
+                    <h3 class="article-headline">Retrieval Parameters</h3>
+                    <p class="article-byline">Fine-tune your search capabilities</p>
+                    
+                    <div class="columns">
+                        <div class="column">
+                            <div class="form-field">
+                                <label class="field-label">Top K Results</label>
+                                <input type="number" class="newspaper-input" id="top-k" name="top_k" value="50">
+                                <p class="field-note">Initial retrieval count</p>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="form-field">
+                                <label class="field-label">Rerank Top N</label>
+                                <input type="number" class="newspaper-input" id="rerank-top-n" name="rerank_top_n" value="25">
+                                <p class="field-note">Final filtered results</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="toggle-field">
+                        <span class="toggle-label">Enable Hybrid Search</span>
+                        <label class="editorial-toggle">
+                            <input type="checkbox" id="use-hybrid-search" name="use_hybrid_search" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </article>
+            </div>
+            
+            <!-- Connections Tab -->
+            <div id="connections" class="tab-content">
+                <div class="section-header">
+                    <h2 class="section-title">External Connections</h2>
+                </div>
+                
+                <article class="article-box">
+                    <h3 class="article-headline">Mattermost Integration</h3>
+                    <p class="article-byline">Connect to your communication platform</p>
+                    
+                    <div class="form-field">
+                        <label class="field-label">Server URL</label>
+                        <input type="url" class="newspaper-input" id="mattermost-url" name="mattermost_url" placeholder="https://your-server.com">
+                    </div>
+                    
+                    <div class="columns">
+                        <div class="column">
+                            <div class="form-field">
+                                <label class="field-label">Access Token</label>
+                                <input type="password" class="newspaper-input" id="mattermost-pat" name="mattermost_personal_access_token">
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="form-field">
+                                <label class="field-label">Inject Token</label>
+                                <input type="password" class="newspaper-input" id="inject-token" name="mattermost_inject_token">
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </form>
+        
+        <!-- Actions -->
+        <div class="editorial-actions">
+            <button type="button" class="editorial-btn" onclick="loadConfig()">
+                REFRESH SETTINGS
+            </button>
+            <button type="submit" class="editorial-btn primary" form="config-form">
+                PUBLISH CONFIGURATION
+            </button>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="newspaper-footer">
+        <p>© 2024 The RAG Tribune • All Rights Reserved • Configuration System v10.0</p>
+    </footer>
+    
+    <!-- Alert -->
+    <div id="alert" class="editorial-alert">
+        <p class="alert-headline">Configuration Published Successfully!</p>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Tab switching
+        function showTab(tabId) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Update range values
+        document.querySelectorAll('.editorial-range').forEach(input => {
+            const valueDisplay = document.getElementById(input.id + '-value');
+            if (valueDisplay) {
+                input.addEventListener('input', () => {
+                    valueDisplay.textContent = input.value;
+                });
+            }
+        });
+        
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const button = input.parentElement.querySelector('.show-password');
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'HIDE';
+            } else {
+                input.type = 'password';
+                button.textContent = 'SHOW';
+            }
+        }
+        
+        function showAlert() {
+            const alert = document.getElementById('alert');
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Populate fields
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    document.getElementById('max-tokens').value = config.embedding.max_tokens || 512;
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    document.getElementById('use-hybrid-search').checked = config.retrieval.use_hybrid_search !== false;
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                }
+                
+                // Update range displays
+                document.querySelectorAll('.editorial-range').forEach(input => {
+                    const valueDisplay = document.getElementById(input.id + '-value');
+                    if (valueDisplay) {
+                        valueDisplay.textContent = input.value;
+                    }
+                });
+                
+                showAlert();
+            } catch (error) {
+                console.error('Failed to load configuration:', error);
+            }
+        }
+        
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showAlert();
+        });
+        
+        // Handle model selection
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const hybridField = document.getElementById('hybrid-mode-field');
+            if (e.target.value.includes('claude-opus-4') || e.target.value.includes('claude-sonnet-4')) {
+                hybridField.style.display = 'flex';
+            } else {
+                hybridField.style.display = 'none';
+                document.getElementById('enable-hybrid-mode').checked = false;
+            }
+        });
+        
+        // Load on start
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            document.getElementById('generation-model').dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>

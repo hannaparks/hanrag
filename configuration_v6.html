@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration - V6</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Material You Color System */
+            --md-sys-color-primary: #006494;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #CBE6FF;
+            --md-sys-color-on-primary-container: #001E30;
+            
+            --md-sys-color-secondary: #50606E;
+            --md-sys-color-on-secondary: #FFFFFF;
+            --md-sys-color-secondary-container: #D3E5F5;
+            --md-sys-color-on-secondary-container: #0C1D29;
+            
+            --md-sys-color-tertiary: #65587B;
+            --md-sys-color-on-tertiary: #FFFFFF;
+            --md-sys-color-tertiary-container: #EBDDFF;
+            --md-sys-color-on-tertiary-container: #201634;
+            
+            --md-sys-color-error: #BA1A1A;
+            --md-sys-color-error-container: #FFDAD6;
+            --md-sys-color-on-error: #FFFFFF;
+            --md-sys-color-on-error-container: #410002;
+            
+            --md-sys-color-background: #FAFCFF;
+            --md-sys-color-on-background: #191C1E;
+            --md-sys-color-surface: #FAFCFF;
+            --md-sys-color-on-surface: #191C1E;
+            --md-sys-color-surface-variant: #DDE3EA;
+            --md-sys-color-on-surface-variant: #41484D;
+            
+            --md-sys-color-outline: #71787E;
+            --md-sys-color-outline-variant: #C1C7CE;
+            
+            /* Elevation */
+            --md-sys-elevation-level0: 0px;
+            --md-sys-elevation-level1: 1px;
+            --md-sys-elevation-level2: 3px;
+            --md-sys-elevation-level3: 6px;
+            --md-sys-elevation-level4: 8px;
+            --md-sys-elevation-level5: 12px;
+        }
+        
+        body {
+            font-family: 'Google Sans', 'Roboto', -apple-system, sans-serif;
+            background: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        /* Top App Bar */
+        .app-bar {
+            background: var(--md-sys-color-surface);
+            box-shadow: 0 var(--md-sys-elevation-level2) 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .app-bar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .app-bar-title {
+            flex: 1;
+            font-size: 1.375rem;
+            font-weight: 400;
+            letter-spacing: 0;
+        }
+        
+        .app-bar-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Icon Buttons */
+        .icon-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .icon-button:hover {
+            background: rgba(0, 100, 148, 0.08);
+        }
+        
+        .icon-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 100, 148, 0.12);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .icon-button:active::before {
+            width: 100px;
+            height: 100px;
+        }
+        
+        /* Navigation Rail */
+        .app-layout {
+            display: flex;
+            min-height: calc(100vh - 72px);
+        }
+        
+        .nav-rail {
+            width: 80px;
+            background: var(--md-sys-color-surface);
+            border-right: 1px solid var(--md-sys-color-outline-variant);
+            padding: 0.5rem 0;
+        }
+        
+        .nav-item {
+            width: 64px;
+            height: 56px;
+            margin: 0.25rem auto;
+            border-radius: 16px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            transition: all 0.2s;
+            position: relative;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+        
+        .nav-item:hover {
+            background: rgba(0, 100, 148, 0.08);
+        }
+        
+        .nav-item.active {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .nav-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Cards */
+        .surface-card {
+            background: var(--md-sys-color-surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 var(--md-sys-elevation-level1) 2px rgba(0,0,0,0.05);
+            transition: box-shadow 0.3s;
+        }
+        
+        .surface-card:hover {
+            box-shadow: 0 var(--md-sys-elevation-level2) 4px rgba(0,0,0,0.08);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-icon-container {
+            width: 40px;
+            height: 40px;
+            background: var(--md-sys-color-primary-container);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--md-sys-color-on-primary-container);
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--md-sys-color-on-surface);
+        }
+        
+        /* Form Fields */
+        .text-field {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .text-field-container {
+            position: relative;
+            background: var(--md-sys-color-surface-variant);
+            border-radius: 4px 4px 0 0;
+            border-bottom: 1px solid var(--md-sys-color-on-surface-variant);
+            transition: all 0.2s;
+        }
+        
+        .text-field-input {
+            width: 100%;
+            padding: 1.5rem 1rem 0.5rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            color: var(--md-sys-color-on-surface);
+        }
+        
+        .text-field-label {
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 1rem;
+            transition: all 0.2s;
+            pointer-events: none;
+        }
+        
+        .text-field-input:focus ~ .text-field-label,
+        .text-field-input:not(:placeholder-shown) ~ .text-field-label {
+            top: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--md-sys-color-primary);
+        }
+        
+        .text-field-container:focus-within {
+            border-bottom: 2px solid var(--md-sys-color-primary);
+        }
+        
+        .text-field-helper {
+            font-size: 0.75rem;
+            color: var(--md-sys-color-on-surface-variant);
+            margin-top: 0.25rem;
+            padding: 0 1rem;
+        }
+        
+        /* Dropdown */
+        .dropdown-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .dropdown-container {
+            position: relative;
+            background: var(--md-sys-color-surface-variant);
+            border-radius: 4px;
+            border: 1px solid var(--md-sys-color-outline);
+            transition: all 0.2s;
+        }
+        
+        .dropdown-select {
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            color: var(--md-sys-color-on-surface);
+            cursor: pointer;
+        }
+        
+        .dropdown-container:focus-within {
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 2px rgba(0, 100, 148, 0.2);
+        }
+        
+        /* Chips */
+        .chip-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chip {
+            padding: 0.5rem 1rem;
+            background: var(--md-sys-color-surface-variant);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .chip:hover {
+            background: rgba(0, 100, 148, 0.08);
+        }
+        
+        .chip.selected {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            border-color: transparent;
+        }
+        
+        /* Switch */
+        .switch-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--md-sys-color-surface-variant);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        
+        .switch-label {
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+        
+        .material-switch {
+            position: relative;
+            width: 52px;
+            height: 32px;
+        }
+        
+        .material-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .switch-track {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--md-sys-color-outline);
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+        
+        .switch-thumb {
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            left: 6px;
+            bottom: 6px;
+            background: var(--md-sys-color-on-primary);
+            border-radius: 50%;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        input:checked + .switch-track {
+            background: var(--md-sys-color-primary);
+        }
+        
+        input:checked + .switch-track .switch-thumb {
+            transform: translateX(20px);
+            background: var(--md-sys-color-on-primary);
+        }
+        
+        /* Slider */
+        .slider-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .slider-label {
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+        
+        .slider-value {
+            font-weight: 500;
+            color: var(--md-sys-color-primary);
+        }
+        
+        .material-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--md-sys-color-surface-variant);
+            border-radius: 2px;
+            outline: none;
+            margin: 1rem 0;
+        }
+        
+        .material-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--md-sys-color-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .material-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--md-sys-color-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: none;
+        }
+        
+        /* FAB */
+        .fab-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1rem;
+        }
+        
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            border: none;
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            box-shadow: 0 var(--md-sys-elevation-level3) 6px rgba(0,0,0,0.15);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .fab:hover {
+            box-shadow: 0 var(--md-sys-elevation-level4) 8px rgba(0,0,0,0.2);
+        }
+        
+        .fab.extended {
+            width: auto;
+            padding: 0 1.5rem;
+            gap: 0.5rem;
+        }
+        
+        .fab-primary {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Snackbar */
+        .snackbar {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--md-sys-color-on-surface);
+            color: var(--md-sys-color-surface);
+            padding: 0.875rem 1.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            box-shadow: 0 var(--md-sys-elevation-level3) 6px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .snackbar.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .snackbar-action {
+            color: var(--md-sys-color-primary-container);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        /* Grid Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-rail {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .fab-container {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top App Bar -->
+    <header class="app-bar">
+        <div class="app-bar-content">
+            <button class="icon-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                </svg>
+            </button>
+            <h1 class="app-bar-title">RAG Configuration</h1>
+            <div class="app-bar-actions">
+                <button class="icon-button" onclick="loadConfig()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                </button>
+                <button class="icon-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="app-layout">
+        <!-- Navigation Rail -->
+        <nav class="nav-rail">
+            <button class="nav-item active" onclick="showSection('essentials')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                </svg>
+                <span class="nav-label">Keys</span>
+            </button>
+            <button class="nav-item" onclick="showSection('models')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                </svg>
+                <span class="nav-label">Models</span>
+            </button>
+            <button class="nav-item" onclick="showSection('search')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <span class="nav-label">Search</span>
+            </button>
+            <button class="nav-item" onclick="showSection('integrations')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                </svg>
+                <span class="nav-label">Chat</span>
+            </button>
+            <button class="nav-item" onclick="showSection('advanced')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                </svg>
+                <span class="nav-label">Settings</span>
+            </button>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <form id="config-form">
+                <!-- Essentials Section -->
+                <div id="essentials" class="tab-content active">
+                    <div class="surface-card">
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                                </svg>
+                            </div>
+                            <h2 class="card-title">API Keys</h2>
+                        </div>
+                        
+                        <div class="text-field">
+                            <div class="text-field-container">
+                                <input type="password" class="text-field-input" id="openai-api-key" name="openai_api_key" placeholder=" ">
+                                <label class="text-field-label">OpenAI API Key</label>
+                            </div>
+                            <div class="text-field-helper">Used for text embeddings and vector generation</div>
+                        </div>
+                        
+                        <div class="text-field">
+                            <div class="text-field-container">
+                                <input type="password" class="text-field-input" id="anthropic-api-key" name="anthropic_api_key" placeholder=" ">
+                                <label class="text-field-label">Anthropic API Key</label>
+                            </div>
+                            <div class="text-field-helper">Powers Claude for intelligent responses</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Models Section -->
+                <div id="models" class="tab-content">
+                    <div class="surface-card">
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                                </svg>
+                            </div>
+                            <h2 class="card-title">Embedding Configuration</h2>
+                        </div>
+                        
+                        <div class="dropdown-field">
+                            <div class="dropdown-container">
+                                <select class="dropdown-select" id="embedding-model" name="embedding_model">
+                                    <option value="">Select Embedding Model</option>
+                                    <option value="text-embedding-3-small">OpenAI 3 Small - Fast & Efficient</option>
+                                    <option value="text-embedding-3-large">OpenAI 3 Large - High Accuracy</option>
+                                    <option value="text-embedding-ada-002">OpenAI Ada 002 - Legacy</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="chip-group">
+                            <div class="chip selected">
+                                <span>512 tokens</span>
+                            </div>
+                            <div class="chip">
+                                <span>1024 tokens</span>
+                            </div>
+                            <div class="chip">
+                                <span>2048 tokens</span>
+                            </div>
+                        </div>
+                        
+                        <div class="slider-field">
+                            <div class="slider-header">
+                                <span class="slider-label">Custom Token Size</span>
+                                <span class="slider-value" id="max-tokens-value">512</span>
+                            </div>
+                            <input type="range" class="material-slider" id="max-tokens" name="max_tokens" min="100" max="2000" value="512">
+                        </div>
+                    </div>
+                    
+                    <div class="surface-card">
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/>
+                                </svg>
+                            </div>
+                            <h2 class="card-title">Generation Model</h2>
+                        </div>
+                        
+                        <div class="dropdown-field">
+                            <div class="dropdown-container">
+                                <select class="dropdown-select" id="generation-model" name="generation_model">
+                                    <option value="">Select Claude Model</option>
+                                    <option value="claude-opus-4-20250514">Claude Opus 4 - Most Capable</option>
+                                    <option value="claude-sonnet-4-20250514">Claude Sonnet 4 - Balanced</option>
+                                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                                    <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="text-field">
+                                <div class="text-field-container">
+                                    <input type="number" class="text-field-input" id="generation-max-tokens" name="generation_max_tokens" value="4096" placeholder=" ">
+                                    <label class="text-field-label">Max Response Tokens</label>
+                                </div>
+                            </div>
+                            <div class="slider-field">
+                                <div class="slider-header">
+                                    <span class="slider-label">Temperature</span>
+                                    <span class="slider-value" id="temperature-value">0.1</span>
+                                </div>
+                                <input type="range" class="material-slider" id="temperature" name="temperature" min="0" max="1" step="0.01" value="0.1">
+                            </div>
+                        </div>
+                        
+                        <div class="switch-field" id="hybrid-mode-field" style="display: none;">
+                            <span class="switch-label">Enable Hybrid Mode (Extended Thinking)</span>
+                            <label class="material-switch">
+                                <input type="checkbox" id="enable-hybrid-mode" name="enable_hybrid_mode">
+                                <span class="switch-track">
+                                    <span class="switch-thumb"></span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Search Section -->
+                <div id="search" class="tab-content">
+                    <div class="surface-card">
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                </svg>
+                            </div>
+                            <h2 class="card-title">Search Configuration</h2>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="text-field">
+                                <div class="text-field-container">
+                                    <input type="number" class="text-field-input" id="top-k" name="top_k" value="50" placeholder=" ">
+                                    <label class="text-field-label">Top K Results</label>
+                                </div>
+                                <div class="text-field-helper">Initial retrieval count</div>
+                            </div>
+                            <div class="text-field">
+                                <div class="text-field-container">
+                                    <input type="number" class="text-field-input" id="rerank-top-n" name="rerank_top_n" value="25" placeholder=" ">
+                                    <label class="text-field-label">Rerank Top N</label>
+                                </div>
+                                <div class="text-field-helper">Final results after reranking</div>
+                            </div>
+                        </div>
+                        
+                        <div class="switch-field">
+                            <span class="switch-label">Enable Hybrid Search</span>
+                            <label class="material-switch">
+                                <input type="checkbox" id="use-hybrid-search" name="use_hybrid_search" checked>
+                                <span class="switch-track">
+                                    <span class="switch-thumb"></span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Integrations Section -->
+                <div id="integrations" class="tab-content">
+                    <div class="surface-card">
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                                </svg>
+                            </div>
+                            <h2 class="card-title">Mattermost Integration</h2>
+                        </div>
+                        
+                        <div class="text-field">
+                            <div class="text-field-container">
+                                <input type="url" class="text-field-input" id="mattermost-url" name="mattermost_url" placeholder=" ">
+                                <label class="text-field-label">Server URL</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="text-field">
+                                <div class="text-field-container">
+                                    <input type="password" class="text-field-input" id="mattermost-pat" name="mattermost_personal_access_token" placeholder=" ">
+                                    <label class="text-field-label">Personal Access Token</label>
+                                </div>
+                            </div>
+                            <div class="text-field">
+                                <div class="text-field-container">
+                                    <input type="password" class="text-field-input" id="inject-token" name="mattermost_inject_token" placeholder=" ">
+                                    <label class="text-field-label">/inject Command Token</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Advanced Section -->
+                <div id="advanced" class="tab-content">
+                    <div class="surface-card">
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                                </svg>
+                            </div>
+                            <h2 class="card-title">Advanced Settings</h2>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="slider-field">
+                                <div class="slider-header">
+                                    <span class="slider-label">Vector Weight</span>
+                                    <span class="slider-value" id="vector-weight-value">0.7</span>
+                                </div>
+                                <input type="range" class="material-slider" id="vector-weight" name="vector_weight" min="0" max="1" step="0.1" value="0.7">
+                            </div>
+                            <div class="slider-field">
+                                <div class="slider-header">
+                                    <span class="slider-label">BM25 Weight</span>
+                                    <span class="slider-value" id="bm25-weight-value">0.3</span>
+                                </div>
+                                <input type="range" class="material-slider" id="bm25-weight" name="bm25_weight" min="0" max="1" step="0.1" value="0.3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+    
+    <!-- FAB -->
+    <div class="fab-container">
+        <button class="fab fab-primary extended" onclick="saveConfig()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+            </svg>
+            <span>Save</span>
+        </button>
+    </div>
+    
+    <!-- Snackbar -->
+    <div id="snackbar" class="snackbar">
+        <span id="snackbar-message"></span>
+        <a href="#" class="snackbar-action" onclick="hideSnackbar()">DISMISS</a>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Section Navigation
+        function showSection(sectionId) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Update sections
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+        
+        // Update slider values
+        document.querySelectorAll('.material-slider').forEach(input => {
+            const valueDisplay = document.getElementById(input.id + '-value');
+            if (valueDisplay) {
+                input.addEventListener('input', () => {
+                    valueDisplay.textContent = input.value;
+                });
+            }
+        });
+        
+        // Chip selection
+        document.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chip.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+                chip.classList.add('selected');
+                
+                // Update token value if it's the token chips
+                const tokenMatch = chip.textContent.match(/(\d+) tokens/);
+                if (tokenMatch) {
+                    document.getElementById('max-tokens').value = tokenMatch[1];
+                    document.getElementById('max-tokens-value').textContent = tokenMatch[1];
+                }
+            });
+        });
+        
+        function showSnackbar(message, actionText = 'DISMISS') {
+            const snackbar = document.getElementById('snackbar');
+            document.getElementById('snackbar-message').textContent = message;
+            snackbar.classList.add('show');
+            
+            setTimeout(() => {
+                hideSnackbar();
+            }, 5000);
+        }
+        
+        function hideSnackbar() {
+            document.getElementById('snackbar').classList.remove('show');
+        }
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Populate fields
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    document.getElementById('max-tokens').value = config.embedding.max_tokens || 512;
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    document.getElementById('use-hybrid-search').checked = config.retrieval.use_hybrid_search !== false;
+                    document.getElementById('vector-weight').value = config.retrieval.vector_weight || 0.7;
+                    document.getElementById('bm25-weight').value = config.retrieval.bm25_weight || 0.3;
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                    document.getElementById('temperature').value = config.generation.temperature || 0.1;
+                }
+                
+                // Update slider displays
+                document.querySelectorAll('.material-slider').forEach(input => {
+                    const valueDisplay = document.getElementById(input.id + '-value');
+                    if (valueDisplay) {
+                        valueDisplay.textContent = input.value;
+                    }
+                });
+                
+                showSnackbar('Configuration loaded successfully');
+            } catch (error) {
+                showSnackbar('Failed to load configuration');
+            }
+        }
+        
+        async function saveConfig() {
+            const form = document.getElementById('config-form');
+            const formData = new FormData(form);
+            
+            // Simulate save
+            showSnackbar('Configuration saved successfully');
+        }
+        
+        // Handle model selection
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const hybridField = document.getElementById('hybrid-mode-field');
+            if (e.target.value.includes('claude-opus-4') || e.target.value.includes('claude-sonnet-4')) {
+                hybridField.style.display = 'flex';
+            } else {
+                hybridField.style.display = 'none';
+                document.getElementById('enable-hybrid-mode').checked = false;
+            }
+        });
+        
+        // Load on start
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            document.getElementById('generation-model').dispatchEvent(new Event('change'));
+        });
+        
+        // Prevent form submission
+        document.getElementById('config-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            saveConfig();
+        });
+    </script>
+</body>
+</html>

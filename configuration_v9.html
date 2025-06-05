@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration - V9</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --cyber-bg: #0a0a0a;
+            --cyber-dark: #1a0033;
+            --cyber-surface: #1a1a2e;
+            --cyber-pink: #ff006e;
+            --cyber-blue: #00f5ff;
+            --cyber-purple: #8b00ff;
+            --cyber-yellow: #ffff00;
+            --cyber-green: #00ff41;
+            --cyber-text: #ffffff;
+            --cyber-text-dim: #a0a0a0;
+        }
+        
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--cyber-bg);
+            color: var(--cyber-text);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, var(--cyber-purple) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, var(--cyber-pink) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, var(--cyber-blue) 0%, transparent 50%);
+            opacity: 0.1;
+            z-index: -2;
+            animation: bgPulse 10s ease-in-out infinite;
+        }
+        
+        @keyframes bgPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+        
+        /* Grid Overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--cyber-blue) 1px, transparent 1px),
+                linear-gradient(90deg, var(--cyber-blue) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.03;
+            z-index: -1;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Glitch Effect */
+        @keyframes glitch {
+            0%, 100% { 
+                text-shadow: 
+                    0.05em 0 0 var(--cyber-pink),
+                    -0.05em 0 0 var(--cyber-blue),
+                    0 0 0.5em var(--cyber-purple);
+            }
+            50% {
+                text-shadow: 
+                    -0.05em 0 0 var(--cyber-pink),
+                    0.05em 0 0 var(--cyber-blue),
+                    0 0 0.5em var(--cyber-purple);
+            }
+        }
+        
+        /* Neon Header */
+        .cyber-header {
+            padding: 2rem;
+            background: linear-gradient(180deg, var(--cyber-dark) 0%, transparent 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cyber-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyber-pink), transparent);
+            animation: scan 2s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .cyber-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 4rem;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            animation: glitch 2s infinite;
+            position: relative;
+        }
+        
+        .cyber-title::before,
+        .cyber-title::after {
+            content: 'RAG SYSTEM';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .cyber-title::before {
+            animation: glitch-1 0.5s infinite;
+            color: var(--cyber-pink);
+            z-index: -1;
+        }
+        
+        .cyber-title::after {
+            animation: glitch-2 0.5s infinite;
+            color: var(--cyber-blue);
+            z-index: -1;
+        }
+        
+        @keyframes glitch-1 {
+            0%, 100% { clip-path: inset(0 0 0 0); }
+            20% { clip-path: inset(0 0 60% 0); }
+            40% { clip-path: inset(30% 0 40% 0); }
+            60% { clip-path: inset(80% 0 0 0); }
+        }
+        
+        @keyframes glitch-2 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            20% { clip-path: inset(40% 0 20% 0); transform: translate(-2px, 2px); }
+            40% { clip-path: inset(0 0 70% 0); transform: translate(2px, -2px); }
+            60% { clip-path: inset(50% 0 0 0); transform: translate(-2px, 0); }
+        }
+        
+        .cyber-subtitle {
+            text-align: center;
+            color: var(--cyber-blue);
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+        
+        /* Status Display */
+        .status-display {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .status-item {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--cyber-green);
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--cyber-green);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%);
+        }
+        
+        .status-item::before {
+            content: '▮';
+            margin-right: 0.5rem;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Navigation */
+        .cyber-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--cyber-surface);
+            border-top: 1px solid var(--cyber-purple);
+            border-bottom: 1px solid var(--cyber-purple);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 1px solid var(--cyber-pink);
+            color: var(--cyber-text);
+            font-family: 'Orbitron', monospace;
+            font-weight: 500;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+        
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--cyber-pink);
+            transition: width 0.3s;
+            z-index: -1;
+        }
+        
+        .nav-btn:hover::before {
+            width: 100%;
+        }
+        
+        .nav-btn:hover {
+            color: var(--cyber-bg);
+            text-shadow: 0 0 10px var(--cyber-pink);
+        }
+        
+        .nav-btn.active {
+            background: var(--cyber-pink);
+            color: var(--cyber-bg);
+            border-color: var(--cyber-pink);
+            box-shadow: 0 0 20px var(--cyber-pink);
+        }
+        
+        /* Main Container */
+        .cyber-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Cyber Cards */
+        .cyber-card {
+            background: var(--cyber-surface);
+            border: 1px solid var(--cyber-purple);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(139, 0, 255, 0.3);
+        }
+        
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyber-pink), var(--cyber-blue), var(--cyber-purple));
+            animation: neonFlow 3s linear infinite;
+        }
+        
+        @keyframes neonFlow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            background: rgba(139, 0, 255, 0.1);
+            border-bottom: 1px solid var(--cyber-purple);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .card-icon {
+            font-size: 2rem;
+            color: var(--cyber-blue);
+            text-shadow: 0 0 20px var(--cyber-blue);
+        }
+        
+        .card-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        /* Cyber Input Fields */
+        .cyber-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .cyber-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--cyber-blue);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .cyber-input,
+        .cyber-select {
+            width: 100%;
+            padding: 1rem;
+            background: var(--cyber-bg);
+            border: 1px solid var(--cyber-purple);
+            color: var(--cyber-text);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .cyber-input:focus,
+        .cyber-select:focus {
+            outline: none;
+            border-color: var(--cyber-blue);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+            background: rgba(0, 245, 255, 0.05);
+        }
+        
+        .cyber-input::placeholder {
+            color: var(--cyber-text-dim);
+        }
+        
+        /* Password Field */
+        .password-group {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: 1px solid var(--cyber-pink);
+            color: var(--cyber-pink);
+            padding: 0.25rem 0.75rem;
+            font-family: inherit;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        
+        .password-toggle:hover {
+            background: var(--cyber-pink);
+            color: var(--cyber-bg);
+            box-shadow: 0 0 10px var(--cyber-pink);
+        }
+        
+        /* Cyber Toggle */
+        .cyber-toggle-field {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(139, 0, 255, 0.1);
+            border: 1px solid var(--cyber-purple);
+        }
+        
+        .cyber-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            cursor: pointer;
+        }
+        
+        .cyber-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--cyber-bg);
+            border: 1px solid var(--cyber-pink);
+            transition: all 0.3s;
+        }
+        
+        .toggle-handle {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: var(--cyber-pink);
+            transition: all 0.3s;
+            box-shadow: 0 0 10px var(--cyber-pink);
+        }
+        
+        input:checked + .toggle-track {
+            border-color: var(--cyber-green);
+        }
+        
+        input:checked + .toggle-track .toggle-handle {
+            transform: translateX(30px);
+            background: var(--cyber-green);
+            box-shadow: 0 0 10px var(--cyber-green);
+        }
+        
+        /* Cyber Slider */
+        .cyber-slider-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .slider-value {
+            color: var(--cyber-yellow);
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--cyber-yellow);
+        }
+        
+        .cyber-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            background: var(--cyber-bg);
+            border: 1px solid var(--cyber-purple);
+            outline: none;
+            position: relative;
+        }
+        
+        .cyber-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: var(--cyber-pink);
+            cursor: pointer;
+            border: 2px solid var(--cyber-blue);
+            box-shadow: 0 0 20px var(--cyber-pink);
+            transition: all 0.3s;
+        }
+        
+        .cyber-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 30px var(--cyber-pink);
+        }
+        
+        .cyber-slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: var(--cyber-pink);
+            cursor: pointer;
+            border: 2px solid var(--cyber-blue);
+            box-shadow: 0 0 20px var(--cyber-pink);
+        }
+        
+        /* Grid Layout */
+        .cyber-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        /* Action Buttons */
+        .cyber-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+        
+        .cyber-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 2px solid var(--cyber-blue);
+            color: var(--cyber-blue);
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            clip-path: polygon(20px 0, 100% 0, calc(100% - 20px) 100%, 0 100%);
+        }
+        
+        .cyber-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--cyber-blue);
+            transform: translate(-50%, -50%);
+            transition: all 0.5s;
+            border-radius: 50%;
+        }
+        
+        .cyber-btn:hover::before {
+            width: 300%;
+            height: 300%;
+        }
+        
+        .cyber-btn:hover {
+            color: var(--cyber-bg);
+            text-shadow: none;
+            border-color: var(--cyber-blue);
+            box-shadow: 0 0 30px var(--cyber-blue);
+        }
+        
+        .cyber-btn.primary {
+            border-color: var(--cyber-pink);
+            color: var(--cyber-pink);
+        }
+        
+        .cyber-btn.primary::before {
+            background: var(--cyber-pink);
+        }
+        
+        .cyber-btn.primary:hover {
+            box-shadow: 0 0 30px var(--cyber-pink);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: cyberFadeIn 0.5s ease;
+        }
+        
+        @keyframes cyberFadeIn {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Alert */
+        .cyber-alert {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 2rem;
+            background: var(--cyber-bg);
+            border: 2px solid var(--cyber-green);
+            color: var(--cyber-green);
+            font-weight: 700;
+            text-transform: uppercase;
+            display: none;
+            z-index: 1000;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+            animation: alertGlow 0.5s ease;
+        }
+        
+        @keyframes alertGlow {
+            0% { 
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .cyber-alert::before {
+            content: '[ ✓ ]';
+            margin-right: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .cyber-title {
+                font-size: 2.5rem;
+            }
+            
+            .cyber-nav {
+                flex-wrap: wrap;
+            }
+            
+            .cyber-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cyber-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="cyber-header">
+        <h1 class="cyber-title">RAG SYSTEM</h1>
+        <p class="cyber-subtitle">Neural Configuration Interface v9.0</p>
+        <div class="status-display">
+            <div class="status-item">System Online</div>
+            <div class="status-item">Uplink Active</div>
+            <div class="status-item">2077 Mode</div>
+        </div>
+    </header>
+    
+    <!-- Navigation -->
+    <nav class="cyber-nav">
+        <button class="nav-btn active" onclick="showTab('auth')">AUTH</button>
+        <button class="nav-btn" onclick="showTab('neural')">NEURAL</button>
+        <button class="nav-btn" onclick="showTab('search')">SEARCH</button>
+        <button class="nav-btn" onclick="showTab('link')">LINK</button>
+        <button class="nav-btn" onclick="showTab('matrix')">MATRIX</button>
+    </nav>
+    
+    <div class="cyber-container">
+        <form id="config-form">
+            <!-- Auth Tab -->
+            <div id="auth" class="tab-content active">
+                <div class="cyber-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔐</div>
+                        <h2 class="card-title">Authentication Matrix</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="cyber-field">
+                            <label class="cyber-label">OpenAI Access Code</label>
+                            <div class="password-group">
+                                <input type="password" class="cyber-input" id="openai-api-key" name="openai_api_key" placeholder="Enter secure key...">
+                                <button type="button" class="password-toggle" onclick="togglePassword('openai-api-key')">REVEAL</button>
+                            </div>
+                        </div>
+                        
+                        <div class="cyber-field">
+                            <label class="cyber-label">Anthropic Neural Key</label>
+                            <div class="password-group">
+                                <input type="password" class="cyber-input" id="anthropic-api-key" name="anthropic_api_key" placeholder="Enter secure key...">
+                                <button type="button" class="password-toggle" onclick="togglePassword('anthropic-api-key')">REVEAL</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Neural Tab -->
+            <div id="neural" class="tab-content">
+                <div class="cyber-card">
+                    <div class="card-header">
+                        <div class="card-icon">🧠</div>
+                        <h2 class="card-title">Neural Processing Unit</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="cyber-field">
+                            <label class="cyber-label">Embedding Matrix Model</label>
+                            <select class="cyber-select" id="embedding-model" name="embedding_model">
+                                <option value="">-- Select Neural Model --</option>
+                                <option value="text-embedding-3-small">Compact Neural Net v3</option>
+                                <option value="text-embedding-3-large">Advanced Neural Net v3</option>
+                                <option value="text-embedding-ada-002">Legacy Neural Net Ada</option>
+                            </select>
+                        </div>
+                        
+                        <div class="cyber-slider-field">
+                            <div class="slider-header">
+                                <label class="cyber-label">Token Buffer Size</label>
+                                <span class="slider-value" id="max-tokens-value">512</span>
+                            </div>
+                            <input type="range" class="cyber-slider" id="max-tokens" name="max_tokens" min="100" max="2000" value="512">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cyber-card">
+                    <div class="card-header">
+                        <div class="card-icon">⚡</div>
+                        <h2 class="card-title">Synthetic Intelligence Core</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="cyber-field">
+                            <label class="cyber-label">AI Core Model</label>
+                            <select class="cyber-select" id="generation-model" name="generation_model">
+                                <option value="">-- Select AI Core --</option>
+                                <option value="claude-opus-4-20250514">OPUS-4 Quantum Core</option>
+                                <option value="claude-sonnet-4-20250514">SONNET-4 Neural Core</option>
+                                <option value="claude-3-5-sonnet-20241022">SONNET-3.5 Enhanced</option>
+                            </select>
+                        </div>
+                        
+                        <div class="cyber-grid">
+                            <div class="cyber-field">
+                                <label class="cyber-label">Response Buffer</label>
+                                <input type="number" class="cyber-input" id="generation-max-tokens" name="generation_max_tokens" value="4096">
+                            </div>
+                            <div class="cyber-slider-field">
+                                <div class="slider-header">
+                                    <label class="cyber-label">Creativity Index</label>
+                                    <span class="slider-value" id="temperature-value">0.1</span>
+                                </div>
+                                <input type="range" class="cyber-slider" id="temperature" name="temperature" min="0" max="1" step="0.01" value="0.1">
+                            </div>
+                        </div>
+                        
+                        <div class="cyber-toggle-field" id="hybrid-mode-field" style="display: none;">
+                            <label class="cyber-label">Quantum Processing Mode</label>
+                            <label class="cyber-toggle">
+                                <input type="checkbox" id="enable-hybrid-mode" name="enable_hybrid_mode">
+                                <div class="toggle-track">
+                                    <div class="toggle-handle"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Tab -->
+            <div id="search" class="tab-content">
+                <div class="cyber-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔍</div>
+                        <h2 class="card-title">Data Mining Configuration</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="cyber-grid">
+                            <div class="cyber-field">
+                                <label class="cyber-label">Search Depth</label>
+                                <input type="number" class="cyber-input" id="top-k" name="top_k" value="50">
+                            </div>
+                            <div class="cyber-field">
+                                <label class="cyber-label">Precision Filter</label>
+                                <input type="number" class="cyber-input" id="rerank-top-n" name="rerank_top_n" value="25">
+                            </div>
+                        </div>
+                        
+                        <div class="cyber-toggle-field">
+                            <label class="cyber-label">Hybrid Search Matrix</label>
+                            <label class="cyber-toggle">
+                                <input type="checkbox" id="use-hybrid-search" name="use_hybrid_search" checked>
+                                <div class="toggle-track">
+                                    <div class="toggle-handle"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Link Tab -->
+            <div id="link" class="tab-content">
+                <div class="cyber-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔗</div>
+                        <h2 class="card-title">Neural Link Interface</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="cyber-field">
+                            <label class="cyber-label">Server Uplink</label>
+                            <input type="url" class="cyber-input" id="mattermost-url" name="mattermost_url" placeholder="https://neural-link.server">
+                        </div>
+                        
+                        <div class="cyber-grid">
+                            <div class="cyber-field">
+                                <label class="cyber-label">Access Token</label>
+                                <input type="password" class="cyber-input" id="mattermost-pat" name="mattermost_personal_access_token">
+                            </div>
+                            <div class="cyber-field">
+                                <label class="cyber-label">Inject Protocol</label>
+                                <input type="password" class="cyber-input" id="inject-token" name="mattermost_inject_token">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Matrix Tab -->
+            <div id="matrix" class="tab-content">
+                <div class="cyber-card">
+                    <div class="card-header">
+                        <div class="card-icon">⚙️</div>
+                        <h2 class="card-title">Matrix Parameters</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="cyber-grid">
+                            <div class="cyber-slider-field">
+                                <div class="slider-header">
+                                    <label class="cyber-label">Vector Coefficient</label>
+                                    <span class="slider-value" id="vector-weight-value">0.7</span>
+                                </div>
+                                <input type="range" class="cyber-slider" id="vector-weight" name="vector_weight" min="0" max="1" step="0.1" value="0.7">
+                            </div>
+                            <div class="cyber-slider-field">
+                                <div class="slider-header">
+                                    <label class="cyber-label">BM25 Coefficient</label>
+                                    <span class="slider-value" id="bm25-weight-value">0.3</span>
+                                </div>
+                                <input type="range" class="cyber-slider" id="bm25-weight" name="bm25_weight" min="0" max="1" step="0.1" value="0.3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Actions -->
+        <div class="cyber-actions">
+            <button type="button" class="cyber-btn" onclick="loadConfig()">
+                <span>SYNC DATA</span>
+            </button>
+            <button type="submit" class="cyber-btn primary" form="config-form">
+                <span>UPLOAD CONFIG</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Alert -->
+    <div id="alert" class="cyber-alert">
+        Configuration Uploaded Successfully
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Tab switching
+        function showTab(tabId) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Update slider values
+        document.querySelectorAll('.cyber-slider').forEach(input => {
+            const valueDisplay = document.getElementById(input.id + '-value');
+            if (valueDisplay) {
+                input.addEventListener('input', () => {
+                    valueDisplay.textContent = input.value;
+                });
+            }
+        });
+        
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const button = input.parentElement.querySelector('.password-toggle');
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'HIDE';
+            } else {
+                input.type = 'password';
+                button.textContent = 'REVEAL';
+            }
+        }
+        
+        function showAlert() {
+            const alert = document.getElementById('alert');
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Populate fields
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    document.getElementById('max-tokens').value = config.embedding.max_tokens || 512;
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    document.getElementById('use-hybrid-search').checked = config.retrieval.use_hybrid_search !== false;
+                    document.getElementById('vector-weight').value = config.retrieval.vector_weight || 0.7;
+                    document.getElementById('bm25-weight').value = config.retrieval.bm25_weight || 0.3;
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                    document.getElementById('temperature').value = config.generation.temperature || 0.1;
+                }
+                
+                // Update slider displays
+                document.querySelectorAll('.cyber-slider').forEach(input => {
+                    const valueDisplay = document.getElementById(input.id + '-value');
+                    if (valueDisplay) {
+                        valueDisplay.textContent = input.value;
+                    }
+                });
+                
+                showAlert();
+            } catch (error) {
+                console.error('Failed to load configuration:', error);
+            }
+        }
+        
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showAlert();
+        });
+        
+        // Handle model selection
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const hybridField = document.getElementById('hybrid-mode-field');
+            if (e.target.value.includes('claude-opus-4') || e.target.value.includes('claude-sonnet-4')) {
+                hybridField.style.display = 'block';
+            } else {
+                hybridField.style.display = 'none';
+                document.getElementById('enable-hybrid-mode').checked = false;
+            }
+        });
+        
+        // Load on start
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            document.getElementById('generation-model').dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>

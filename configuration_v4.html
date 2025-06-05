@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration - V4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg: #0a0a0a;
+            --surface: #0f0f0f;
+            --border: #1a1a1a;
+            --text-primary: #00ff41;
+            --text-secondary: #00cc33;
+            --text-muted: #666;
+            --text-white: #e0e0e0;
+            --prompt: #ffff00;
+            --error: #ff0033;
+            --info: #00ffff;
+            --warning: #ff9900;
+        }
+        
+        @font-face {
+            font-family: 'Terminal';
+            src: local('Menlo'), local('Monaco'), local('Consolas'), local('Courier New'), monospace;
+        }
+        
+        body {
+            font-family: 'Terminal', 'Menlo', 'Monaco', 'Consolas', monospace;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.4;
+            font-size: 14px;
+            overflow: hidden;
+        }
+        
+        /* Terminal Container */
+        .terminal {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+        
+        /* Terminal Header */
+        .terminal-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .terminal-title {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-white);
+            text-align: center;
+        }
+        
+        .terminal-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .terminal-btn.close { background: #ff5f56; }
+        .terminal-btn.minimize { background: #ffbd2e; }
+        .terminal-btn.maximize { background: #27c93f; }
+        
+        /* Terminal Body */
+        .terminal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: var(--bg);
+            scrollbar-width: thin;
+            scrollbar-color: var(--text-primary) var(--bg);
+        }
+        
+        .terminal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .terminal-body::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        
+        .terminal-body::-webkit-scrollbar-thumb {
+            background: var(--text-primary);
+            border-radius: 4px;
+        }
+        
+        /* Terminal Content */
+        .terminal-line {
+            margin-bottom: 0.5rem;
+            font-size: 13px;
+        }
+        
+        .prompt {
+            color: var(--prompt);
+            margin-right: 0.5rem;
+        }
+        
+        .command {
+            color: var(--text-white);
+        }
+        
+        .output {
+            color: var(--text-primary);
+            margin-left: 1rem;
+        }
+        
+        .comment {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        
+        .section-header {
+            color: var(--info);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* Form Elements */
+        .config-field {
+            margin: 1rem 0;
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+        }
+        
+        .field-label {
+            color: var(--text-secondary);
+            min-width: 200px;
+            text-align: right;
+        }
+        
+        .field-value {
+            flex: 1;
+        }
+        
+        .terminal-input {
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-family: inherit;
+            font-size: inherit;
+            outline: none;
+            width: 100%;
+            caret-color: var(--text-primary);
+        }
+        
+        .terminal-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .terminal-select {
+            background: none;
+            border: 1px solid var(--text-secondary);
+            color: var(--text-white);
+            font-family: inherit;
+            font-size: inherit;
+            padding: 0.25rem 0.5rem;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .terminal-select:focus {
+            border-color: var(--text-primary);
+        }
+        
+        .terminal-select option {
+            background: var(--bg);
+            color: var(--text-white);
+        }
+        
+        /* Password Field */
+        .password-field {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .password-toggle {
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .password-toggle:hover {
+            color: var(--text-primary);
+        }
+        
+        /* Toggle */
+        .terminal-toggle {
+            display: inline-block;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        
+        .terminal-toggle.on {
+            color: var(--text-primary);
+        }
+        
+        /* Range */
+        .range-field {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .range-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--border);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .range-fill {
+            height: 100%;
+            background: var(--text-primary);
+            transition: width 0.1s;
+        }
+        
+        .range-value {
+            color: var(--text-white);
+            min-width: 3rem;
+            text-align: right;
+        }
+        
+        /* Status Line */
+        .status-line {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--text-primary);
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* Actions */
+        .terminal-actions {
+            margin: 3rem 0 2rem;
+            padding-top: 2rem;
+            border-top: 1px dashed var(--text-secondary);
+        }
+        
+        .action-line {
+            margin-bottom: 0.5rem;
+        }
+        
+        .action-key {
+            color: var(--warning);
+            font-weight: bold;
+        }
+        
+        .action-desc {
+            color: var(--text-white);
+            margin-left: 1rem;
+        }
+        
+        /* Alert */
+        .terminal-alert {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--surface);
+            border: 1px solid;
+            padding: 1rem;
+            display: none;
+            animation: slideIn 0.3s;
+            max-width: 400px;
+        }
+        
+        .terminal-alert.success {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+        
+        .terminal-alert.error {
+            border-color: var(--error);
+            color: var(--error);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        /* ASCII Art */
+        .ascii-art {
+            color: var(--text-secondary);
+            font-size: 10px;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            white-space: pre;
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { content: '[|]'; }
+            25% { content: '[/]'; }
+            50% { content: '[-]'; }
+            75% { content: '[\\]'; }
+            100% { content: '[|]'; }
+        }
+        
+        /* Keyboard Navigation */
+        .field-focused {
+            background: rgba(0, 255, 65, 0.1);
+            outline: 1px solid var(--text-primary);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-controls">
+                <button class="terminal-btn close"></button>
+                <button class="terminal-btn minimize"></button>
+                <button class="terminal-btn maximize"></button>
+            </div>
+            <div class="terminal-title">RAG System Configuration Terminal v4.0.1</div>
+        </div>
+        
+        <div class="terminal-body">
+            <pre class="ascii-art">
+ ____      _     ____    ____             __ _       
+|  _ \    / \   / ___|  / ___|___  _ __  / _(_) __ _ 
+| |_) |  / _ \ | |  _  | |   / _ \| '_ \| |_| |/ _` |
+|  _ <  / ___ \| |_| | | |__| (_) | | | |  _| | (_| |
+|_| \_\/_/   \_\\____|  \____\___/|_| |_|_| |_|\__, |
+                                                |___/ 
+            </pre>
+            
+            <div class="terminal-line">
+                <span class="prompt">$</span>
+                <span class="command">rag-config --interactive</span>
+            </div>
+            <div class="terminal-line output">Initializing configuration interface...</div>
+            <div class="terminal-line output">Loading current settings... <span style="color: var(--text-primary)">OK</span></div>
+            <div class="terminal-line output comment"># Use keyboard shortcuts or click to modify values</div>
+            
+            <form id="config-form">
+                <!-- API Keys -->
+                <div class="section-header">[API KEYS]</div>
+                
+                <div class="config-field">
+                    <label class="field-label">openai_api_key:</label>
+                    <div class="field-value">
+                        <div class="password-field">
+                            <input type="password" class="terminal-input" id="openai-api-key" name="openai_api_key" placeholder="sk-..." autocomplete="off">
+                            <span class="password-toggle" onclick="togglePassword('openai-api-key')">[show]</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-field">
+                    <label class="field-label">anthropic_api_key:</label>
+                    <div class="field-value">
+                        <div class="password-field">
+                            <input type="password" class="terminal-input" id="anthropic-api-key" name="anthropic_api_key" placeholder="sk-ant-..." autocomplete="off">
+                            <span class="password-toggle" onclick="togglePassword('anthropic-api-key')">[show]</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mattermost -->
+                <div class="section-header">[MATTERMOST]</div>
+                
+                <div class="config-field">
+                    <label class="field-label">server_url:</label>
+                    <div class="field-value">
+                        <input type="url" class="terminal-input" id="mattermost-url" name="mattermost_url" placeholder="https://your-mattermost.com">
+                    </div>
+                </div>
+                
+                <div class="config-field">
+                    <label class="field-label">personal_access_token:</label>
+                    <div class="field-value">
+                        <input type="password" class="terminal-input" id="mattermost-pat" name="mattermost_personal_access_token" placeholder="<token>">
+                    </div>
+                </div>
+                
+                <!-- Embedding -->
+                <div class="section-header">[EMBEDDING]</div>
+                
+                <div class="config-field">
+                    <label class="field-label">model:</label>
+                    <div class="field-value">
+                        <select class="terminal-select" id="embedding-model" name="embedding_model">
+                            <option value="text-embedding-3-small">text-embedding-3-small</option>
+                            <option value="text-embedding-3-large">text-embedding-3-large</option>
+                            <option value="text-embedding-ada-002">text-embedding-ada-002</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="config-field">
+                    <label class="field-label">max_tokens:</label>
+                    <div class="field-value">
+                        <div class="range-field">
+                            <div class="range-bar" id="max-tokens-bar" onclick="updateRange(event, 'max-tokens', 100, 2000)">
+                                <div class="range-fill" id="max-tokens-fill" style="width: 20.6%"></div>
+                            </div>
+                            <span class="range-value" id="max-tokens-value">512</span>
+                            <input type="hidden" id="max-tokens" name="max_tokens" value="512">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Retrieval -->
+                <div class="section-header">[RETRIEVAL]</div>
+                
+                <div class="config-field">
+                    <label class="field-label">top_k:</label>
+                    <div class="field-value">
+                        <input type="number" class="terminal-input" id="top-k" name="top_k" value="50" style="width: 100px;">
+                    </div>
+                </div>
+                
+                <div class="config-field">
+                    <label class="field-label">rerank_top_n:</label>
+                    <div class="field-value">
+                        <input type="number" class="terminal-input" id="rerank-top-n" name="rerank_top_n" value="25" style="width: 100px;">
+                    </div>
+                </div>
+                
+                <div class="config-field">
+                    <label class="field-label">use_hybrid_search:</label>
+                    <div class="field-value">
+                        <span class="terminal-toggle on" id="use-hybrid-search-toggle" onclick="toggleBoolean(this, 'use-hybrid-search')">[TRUE]</span>
+                        <input type="hidden" id="use-hybrid-search" name="use_hybrid_search" value="true">
+                    </div>
+                </div>
+                
+                <!-- Generation -->
+                <div class="section-header">[GENERATION]</div>
+                
+                <div class="config-field">
+                    <label class="field-label">model:</label>
+                    <div class="field-value">
+                        <select class="terminal-select" id="generation-model" name="generation_model">
+                            <option value="claude-opus-4-20250514">claude-opus-4-20250514</option>
+                            <option value="claude-sonnet-4-20250514">claude-sonnet-4-20250514</option>
+                            <option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet-20241022</option>
+                            <option value="claude-3-opus-20240229">claude-3-opus-20240229</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="config-field">
+                    <label class="field-label">max_tokens:</label>
+                    <div class="field-value">
+                        <input type="number" class="terminal-input" id="generation-max-tokens" name="generation_max_tokens" value="4096" style="width: 100px;">
+                    </div>
+                </div>
+                
+                <div class="config-field">
+                    <label class="field-label">temperature:</label>
+                    <div class="field-value">
+                        <div class="range-field">
+                            <div class="range-bar" id="temperature-bar" onclick="updateRange(event, 'temperature', 0, 1)">
+                                <div class="range-fill" id="temperature-fill" style="width: 10%"></div>
+                            </div>
+                            <span class="range-value" id="temperature-value">0.10</span>
+                            <input type="hidden" id="temperature" name="temperature" value="0.1">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-field" id="hybrid-mode-field" style="display: none;">
+                    <label class="field-label">enable_hybrid_mode:</label>
+                    <div class="field-value">
+                        <span class="terminal-toggle" id="enable-hybrid-mode-toggle" onclick="toggleBoolean(this, 'enable-hybrid-mode')">[FALSE]</span>
+                        <input type="hidden" id="enable-hybrid-mode" name="enable_hybrid_mode" value="false">
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="terminal-actions">
+                    <div class="action-line">
+                        <span class="action-key">[S]</span>
+                        <span class="action-desc">Save configuration</span>
+                    </div>
+                    <div class="action-line">
+                        <span class="action-key">[R]</span>
+                        <span class="action-desc">Reload from disk</span>
+                    </div>
+                    <div class="action-line">
+                        <span class="action-key">[V]</span>
+                        <span class="action-desc">Validate configuration</span>
+                    </div>
+                    <div class="action-line">
+                        <span class="action-key">[Q]</span>
+                        <span class="action-desc">Quit without saving</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="status-line">
+            <div class="status-item">
+                <span class="status-indicator"></span>
+                <span>CONNECTED</span>
+            </div>
+            <div class="status-item">
+                <span>ENV: <span id="env-status">PRODUCTION</span></span>
+            </div>
+            <div class="status-item">
+                <span>MODIFIED: <span id="modified-status">NO</span></span>
+            </div>
+            <div class="status-item">
+                <span>Press <span style="color: var(--warning);">?</span> for help</span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="alert" class="terminal-alert"></div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        let modified = false;
+        
+        function setModified(isModified) {
+            modified = isModified;
+            document.getElementById('modified-status').textContent = isModified ? 'YES' : 'NO';
+            document.getElementById('modified-status').style.color = isModified ? 'var(--warning)' : 'inherit';
+        }
+        
+        // Track changes
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', () => setModified(true));
+            element.addEventListener('input', () => setModified(true));
+        });
+        
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const toggle = input.parentElement.querySelector('.password-toggle');
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.textContent = '[hide]';
+            } else {
+                input.type = 'password';
+                toggle.textContent = '[show]';
+            }
+        }
+        
+        function toggleBoolean(element, fieldId) {
+            const input = document.getElementById(fieldId);
+            const isOn = element.classList.contains('on');
+            
+            if (isOn) {
+                element.classList.remove('on');
+                element.textContent = '[FALSE]';
+                input.value = 'false';
+            } else {
+                element.classList.add('on');
+                element.textContent = '[TRUE]';
+                input.value = 'true';
+            }
+            setModified(true);
+        }
+        
+        function updateRange(event, fieldId, min, max) {
+            const bar = event.currentTarget;
+            const rect = bar.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width;
+            const value = min + (max - min) * percent;
+            
+            const fill = document.getElementById(fieldId + '-fill');
+            const valueDisplay = document.getElementById(fieldId + '-value');
+            const input = document.getElementById(fieldId);
+            
+            fill.style.width = (percent * 100) + '%';
+            
+            if (fieldId === 'temperature') {
+                valueDisplay.textContent = value.toFixed(2);
+                input.value = value.toFixed(2);
+            } else {
+                valueDisplay.textContent = Math.round(value);
+                input.value = Math.round(value);
+            }
+            setModified(true);
+        }
+        
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.className = `terminal-alert ${type}`;
+            alert.innerHTML = `<pre>${message}</pre>`;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        async function loadConfig() {
+            showAlert('Loading configuration...', 'success');
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Update environment
+                document.getElementById('env-status').textContent = 
+                    config.environment === 'production' ? 'PRODUCTION' : 'DEVELOPMENT';
+                
+                // Populate fields
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    const maxTokens = config.embedding.max_tokens || 512;
+                    document.getElementById('max-tokens').value = maxTokens;
+                    document.getElementById('max-tokens-value').textContent = maxTokens;
+                    document.getElementById('max-tokens-fill').style.width = ((maxTokens - 100) / 1900 * 100) + '%';
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    const useHybrid = config.retrieval.use_hybrid_search !== false;
+                    document.getElementById('use-hybrid-search').value = useHybrid ? 'true' : 'false';
+                    document.getElementById('use-hybrid-search-toggle').textContent = useHybrid ? '[TRUE]' : '[FALSE]';
+                    document.getElementById('use-hybrid-search-toggle').classList.toggle('on', useHybrid);
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                    const temp = config.generation.temperature || 0.1;
+                    document.getElementById('temperature').value = temp;
+                    document.getElementById('temperature-value').textContent = temp.toFixed(2);
+                    document.getElementById('temperature-fill').style.width = (temp * 100) + '%';
+                }
+                
+                setModified(false);
+                showAlert('Configuration loaded successfully', 'success');
+            } catch (error) {
+                showAlert('ERROR: ' + error.message, 'error');
+            }
+        }
+        
+        async function saveConfig() {
+            showAlert('Saving configuration...', 'success');
+            
+            const form = document.getElementById('config-form');
+            const formData = new FormData(form);
+            
+            const config = {
+                embedding: {
+                    model: formData.get('embedding_model'),
+                    max_tokens: parseInt(formData.get('max_tokens'))
+                },
+                retrieval: {
+                    top_k: parseInt(formData.get('top_k')),
+                    rerank_top_n: parseInt(formData.get('rerank_top_n')),
+                    use_hybrid_search: formData.get('use_hybrid_search') === 'true'
+                },
+                generation: {
+                    model: formData.get('generation_model'),
+                    max_tokens: parseInt(formData.get('generation_max_tokens')),
+                    temperature: parseFloat(formData.get('temperature')),
+                    enable_hybrid_mode: formData.get('enable_hybrid_mode') === 'true'
+                },
+                openai_api_key: formData.get('openai_api_key'),
+                anthropic_api_key: formData.get('anthropic_api_key'),
+                mattermost_url: formData.get('mattermost_url'),
+                mattermost_personal_access_token: formData.get('mattermost_personal_access_token')
+            };
+            
+            // Simulate save
+            setTimeout(() => {
+                setModified(false);
+                showAlert('Configuration saved successfully\n>>> Changes applied to system', 'success');
+            }, 1000);
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+            
+            switch(e.key.toLowerCase()) {
+                case 's':
+                    e.preventDefault();
+                    saveConfig();
+                    break;
+                case 'r':
+                    e.preventDefault();
+                    loadConfig();
+                    break;
+                case 'v':
+                    e.preventDefault();
+                    showAlert('Configuration validation passed\n>>> All settings are valid', 'success');
+                    break;
+                case 'q':
+                    e.preventDefault();
+                    if (modified) {
+                        if (confirm('You have unsaved changes. Quit anyway?')) {
+                            window.close();
+                        }
+                    } else {
+                        window.close();
+                    }
+                    break;
+                case '?':
+                    e.preventDefault();
+                    showAlert('KEYBOARD SHORTCUTS:\n[S] Save  [R] Reload  [V] Validate  [Q] Quit\n[Tab] Navigate fields  [Space] Toggle boolean', 'success');
+                    break;
+            }
+        });
+        
+        // Handle model selection
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const hybridField = document.getElementById('hybrid-mode-field');
+            if (e.target.value.includes('claude-opus-4') || e.target.value.includes('claude-sonnet-4')) {
+                hybridField.style.display = 'flex';
+            } else {
+                hybridField.style.display = 'none';
+                document.getElementById('enable-hybrid-mode').value = 'false';
+                document.getElementById('enable-hybrid-mode-toggle').textContent = '[FALSE]';
+                document.getElementById('enable-hybrid-mode-toggle').classList.remove('on');
+            }
+        });
+        
+        // Load on start
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            document.getElementById('generation-model').dispatchEvent(new Event('change'));
+        });
+        
+        // Prevent form submission
+        document.getElementById('config-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            saveConfig();
+        });
+    </script>
+</body>
+</html>

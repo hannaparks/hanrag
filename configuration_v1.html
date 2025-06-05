@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration - V1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(to br, #f0f9ff, #e0f2fe);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f0f9ff;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* Alert */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: none;
+            font-weight: 500;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        /* Grid Layout */
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Card Sections */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .card-header h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            padding: 4px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+        
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-help {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-top: 0.25rem;
+        }
+        
+        /* Input Group */
+        .input-group {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            width: 20px;
+            height: 20px;
+        }
+        
+        .input-group .form-input {
+            padding-left: 3rem;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .toggle-password:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Range Input */
+        .range-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .range-input {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+        
+        .range-value {
+            min-width: 3rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+        }
+        
+        .toggle-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #cbd5e1;
+            border-radius: 999px;
+            transition: all 0.3s;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        input:checked + .toggle-slider {
+            background: var(--primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* Full Width Cards */
+        .card-wide {
+            grid-column: 1 / -1;
+        }
+        
+        /* Actions */
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            color: var(--dark);
+        }
+        
+        .tab.active {
+            color: var(--primary);
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+        
+        /* Grid for form fields */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RAG Configuration Center</h1>
+            <div class="status-bar">
+                <div class="status-pill">
+                    <span class="status-dot"></span>
+                    <span id="status-text">Connected</span>
+                </div>
+                <div class="status-pill">
+                    <svg class="status-icon" width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 016 0v2h2V7a5 5 0 00-5-5z"/>
+                    </svg>
+                    <span id="env-text">Production</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="alert" class="alert"></div>
+        
+        <form id="config-form">
+            <div class="config-grid">
+                <!-- API Keys Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>
+                            <svg class="card-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            API Keys
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">OpenAI API Key</label>
+                            <div class="input-group">
+                                <svg class="input-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                </svg>
+                                <input type="password" class="form-input" id="openai-api-key" name="openai_api_key" placeholder="sk-...">
+                                <button type="button" class="toggle-password" onclick="togglePassword('openai-api-key')">Show</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Anthropic API Key</label>
+                            <div class="input-group">
+                                <svg class="input-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                </svg>
+                                <input type="password" class="form-input" id="anthropic-api-key" name="anthropic_api_key" placeholder="sk-ant-...">
+                                <button type="button" class="toggle-password" onclick="togglePassword('anthropic-api-key')">Show</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mattermost Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>
+                            <svg class="card-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                                <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+                            </svg>
+                            Mattermost Integration
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Server URL</label>
+                            <input type="url" class="form-input" id="mattermost-url" name="mattermost_url" placeholder="https://your-mattermost.com">
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Access Token</label>
+                                <input type="password" class="form-input" id="mattermost-pat" name="mattermost_personal_access_token">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">/inject Token</label>
+                                <input type="password" class="form-input" id="inject-token" name="mattermost_inject_token">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Embedding Settings Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>
+                            <svg class="card-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                            Embedding Configuration
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Embedding Model</label>
+                            <select class="form-select" id="embedding-model" name="embedding_model">
+                                <option value="text-embedding-3-small">OpenAI 3 Small (Fast)</option>
+                                <option value="text-embedding-3-large">OpenAI 3 Large (Accurate)</option>
+                                <option value="text-embedding-ada-002">OpenAI Ada 002 (Legacy)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Max Tokens per Chunk</label>
+                            <div class="range-group">
+                                <input type="range" class="range-input" id="max-tokens" name="max_tokens" min="100" max="2000" value="512">
+                                <span class="range-value" id="max-tokens-value">512</span>
+                            </div>
+                            <span class="form-help">Controls chunk size for document processing</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Retrieval Settings Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>
+                            <svg class="card-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                            </svg>
+                            Retrieval Settings
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="tabs">
+                            <button type="button" class="tab active" onclick="switchTab(this, 'basic-retrieval')">Basic</button>
+                            <button type="button" class="tab" onclick="switchTab(this, 'advanced-retrieval')">Advanced</button>
+                        </div>
+                        <div id="basic-retrieval" class="tab-content">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Top K Results</label>
+                                    <input type="number" class="form-input" id="top-k" name="top_k" value="50">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Rerank Top N</label>
+                                    <input type="number" class="form-input" id="rerank-top-n" name="rerank_top_n" value="25">
+                                </div>
+                            </div>
+                            <div class="toggle-group">
+                                <label class="toggle-label">Enable Hybrid Search</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="use-hybrid-search" name="use_hybrid_search" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div id="advanced-retrieval" class="tab-content" style="display: none;">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Vector Weight</label>
+                                    <input type="number" class="form-input" id="vector-weight" name="vector_weight" value="0.7" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">BM25 Weight</label>
+                                    <input type="number" class="form-input" id="bm25-weight" name="bm25_weight" value="0.3" step="0.1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generation Settings Card (Wide) -->
+                <div class="card card-wide">
+                    <div class="card-header">
+                        <h2>
+                            <svg class="card-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                            </svg>
+                            Generation Configuration
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Claude Model</label>
+                                <select class="form-select" id="generation-model" name="generation_model">
+                                    <option value="claude-opus-4-20250514">Claude Opus 4 (Latest)</option>
+                                    <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+                                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                                    <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Max Response Tokens</label>
+                                <input type="number" class="form-input" id="generation-max-tokens" name="generation_max_tokens" value="4096">
+                                <span class="form-help">Opus 4: 32K max, Sonnet 4: 64K max</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Temperature</label>
+                                <div class="range-group">
+                                    <input type="range" class="range-input" id="temperature" name="temperature" min="0" max="1" step="0.01" value="0.1">
+                                    <span class="range-value" id="temperature-value">0.1</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toggle-group" id="hybrid-mode-group" style="margin-top: 1rem;">
+                            <div>
+                                <label class="toggle-label">Enable Hybrid Mode</label>
+                                <span class="form-help">Claude 4 only - Enables extended thinking</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enable-hybrid-mode" name="enable_hybrid_mode">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button type="button" class="btn btn-primary" onclick="loadConfig()">
+                    <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                    </svg>
+                    Refresh
+                </button>
+                <button type="submit" class="btn btn-success">
+                    <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Save Configuration
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Update range values
+        document.querySelectorAll('.range-input').forEach(input => {
+            const valueDisplay = document.getElementById(input.id + '-value');
+            if (valueDisplay) {
+                input.addEventListener('input', () => {
+                    valueDisplay.textContent = input.value;
+                });
+            }
+        });
+        
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.display = 'flex';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const button = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                button.textContent = 'Show';
+            }
+        }
+        
+        function switchTab(tab, contentId) {
+            // Update active tab
+            tab.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Show selected content
+            tab.closest('.card-body').querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(contentId).style.display = 'block';
+        }
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Update status
+                document.getElementById('env-text').textContent = config.environment || 'Development';
+                
+                // Populate form fields (simplified for demo)
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    document.getElementById('max-tokens').value = config.embedding.max_tokens || 512;
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    document.getElementById('use-hybrid-search').checked = config.retrieval.use_hybrid_search !== false;
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                    document.getElementById('temperature').value = config.generation.temperature || 0.1;
+                }
+                
+                showAlert('Configuration loaded successfully', 'success');
+            } catch (error) {
+                showAlert('Failed to load configuration: ' + error.message, 'error');
+            }
+        }
+        
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            // Save logic here
+            showAlert('Configuration saved successfully!', 'success');
+        });
+        
+        // Handle model selection
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const hybridGroup = document.getElementById('hybrid-mode-group');
+            if (e.target.value.includes('claude-opus-4') || e.target.value.includes('claude-sonnet-4')) {
+                hybridGroup.style.display = 'flex';
+            } else {
+                hybridGroup.style.display = 'none';
+                document.getElementById('enable-hybrid-mode').checked = false;
+            }
+        });
+        
+        // Load on start
+        window.addEventListener('DOMContentLoaded', loadConfig);
+    </script>
+</body>
+</html>

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration - V7</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg: #e0e5ec;
+            --surface: #e0e5ec;
+            --text: #31344b;
+            --text-secondary: #44476a;
+            --primary: #6d5dfc;
+            --primary-light: #8abdff;
+            --success: #5dfdcb;
+            --warning: #f8b500;
+            --danger: #ff6b6b;
+            
+            /* Neomorphism shadows */
+            --shadow-light: #ffffff;
+            --shadow-dark: #a3b1c6;
+            --inner-shadow: inset 6px 6px 10px 0 rgba(0, 0, 0, 0.1),
+                            inset -6px -6px 10px 0 rgba(255, 255, 255, 0.8);
+        }
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* Soft container */
+        .soft-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Header */
+        .soft-header {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 9px 9px 16px var(--shadow-dark),
+                       -9px -9px 16px var(--shadow-light);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .logo-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: var(--surface);
+            box-shadow: 9px 9px 16px var(--shadow-dark),
+                       -9px -9px 16px var(--shadow-light);
+            margin-bottom: 1rem;
+        }
+        
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+        
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        /* Navigation Pills */
+        .nav-pills {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-pill {
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            background: var(--surface);
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 6px 6px 12px var(--shadow-dark),
+                       -6px -6px 12px var(--shadow-light);
+        }
+        
+        .nav-pill:hover {
+            box-shadow: 8px 8px 16px var(--shadow-dark),
+                       -8px -8px 16px var(--shadow-light);
+        }
+        
+        .nav-pill:active {
+            box-shadow: var(--inner-shadow);
+        }
+        
+        .nav-pill.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: var(--inner-shadow);
+        }
+        
+        /* Soft Cards */
+        .soft-card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 9px 9px 16px var(--shadow-dark),
+                       -9px -9px 16px var(--shadow-light);
+            transition: all 0.3s;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: var(--surface);
+            box-shadow: 6px 6px 12px var(--shadow-dark),
+                       -6px -6px 12px var(--shadow-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+        
+        /* Soft Input Fields */
+        .soft-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .soft-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .soft-input,
+        .soft-select {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: var(--surface);
+            border: none;
+            border-radius: 15px;
+            font-size: 0.875rem;
+            color: var(--text);
+            box-shadow: var(--inner-shadow);
+            transition: all 0.3s;
+        }
+        
+        .soft-input:focus,
+        .soft-select:focus {
+            outline: none;
+            box-shadow: var(--inner-shadow),
+                       0 0 0 2px var(--primary);
+        }
+        
+        .soft-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+        
+        /* Password field with button */
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-group .soft-input {
+            padding-right: 4rem;
+        }
+        
+        .input-button {
+            position: absolute;
+            right: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: none;
+            border-radius: 10px;
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 4px 4px 8px var(--shadow-dark),
+                       -4px -4px 8px var(--shadow-light);
+            transition: all 0.2s;
+        }
+        
+        .input-button:hover {
+            color: var(--primary-light);
+        }
+        
+        .input-button:active {
+            box-shadow: var(--inner-shadow);
+        }
+        
+        /* Soft Toggle */
+        .soft-toggle-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+        }
+        
+        .soft-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .soft-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-track {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--surface);
+            border-radius: 30px;
+            box-shadow: var(--inner-shadow);
+            transition: all 0.3s;
+        }
+        
+        .toggle-thumb {
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background: var(--surface);
+            border-radius: 50%;
+            box-shadow: 4px 4px 8px var(--shadow-dark),
+                       -4px -4px 8px var(--shadow-light);
+            transition: all 0.3s;
+        }
+        
+        input:checked + .toggle-track {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        }
+        
+        input:checked + .toggle-track .toggle-thumb {
+            transform: translateX(30px);
+        }
+        
+        /* Soft Slider */
+        .soft-slider-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .slider-value {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .soft-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 20px;
+            border-radius: 10px;
+            background: var(--surface);
+            box-shadow: var(--inner-shadow);
+            outline: none;
+        }
+        
+        .soft-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--surface);
+            cursor: pointer;
+            box-shadow: 6px 6px 12px var(--shadow-dark),
+                       -6px -6px 12px var(--shadow-light);
+            transition: all 0.2s;
+        }
+        
+        .soft-slider::-webkit-slider-thumb:hover {
+            box-shadow: 8px 8px 16px var(--shadow-dark),
+                       -8px -8px 16px var(--shadow-light);
+        }
+        
+        .soft-slider::-moz-range-thumb {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--surface);
+            cursor: pointer;
+            border: none;
+            box-shadow: 6px 6px 12px var(--shadow-dark),
+                       -6px -6px 12px var(--shadow-light);
+        }
+        
+        /* Grid Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        /* Soft Buttons */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .soft-button {
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: 8px 8px 16px var(--shadow-dark),
+                       -8px -8px 16px var(--shadow-light);
+        }
+        
+        .soft-button:hover {
+            box-shadow: 10px 10px 20px var(--shadow-dark),
+                       -10px -10px 20px var(--shadow-light);
+        }
+        
+        .soft-button:active {
+            box-shadow: var(--inner-shadow);
+        }
+        
+        .soft-button.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: softFadeIn 0.5s ease;
+        }
+        
+        @keyframes softFadeIn {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Notification */
+        .soft-notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--surface);
+            border-radius: 15px;
+            box-shadow: 8px 8px 16px var(--shadow-dark),
+                       -8px -8px 16px var(--shadow-light);
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .notification-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--success), #4ecdc4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        /* Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--surface);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 6px 6px 12px var(--shadow-dark),
+                       -6px -6px 12px var(--shadow-light);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-pills {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .soft-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="soft-container">
+        <!-- Header -->
+        <div class="soft-header">
+            <div class="logo-container">
+                <span class="logo-text">R</span>
+            </div>
+            <h1 class="header-title">RAG Configuration</h1>
+            <p class="header-subtitle">Soft UI Experience • Version 7.0</p>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="nav-pills">
+            <button class="nav-pill active" onclick="showTab('overview')">Overview</button>
+            <button class="nav-pill" onclick="showTab('credentials')">Credentials</button>
+            <button class="nav-pill" onclick="showTab('models')">AI Models</button>
+            <button class="nav-pill" onclick="showTab('search')">Search</button>
+            <button class="nav-pill" onclick="showTab('integration')">Integration</button>
+        </nav>
+        
+        <form id="config-form">
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content active">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-value">98%</div>
+                        <div class="stat-label">System Health</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">2.4K</div>
+                        <div class="stat-label">API Calls Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">15ms</div>
+                        <div class="stat-label">Avg Response Time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">3.2GB</div>
+                        <div class="stat-label">Vectors Stored</div>
+                    </div>
+                </div>
+                
+                <div class="soft-card">
+                    <div class="card-icon">⚡</div>
+                    <h2 class="card-title">Quick Status</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        All systems operational. Your RAG pipeline is configured and ready for production use.
+                    </p>
+                    <div class="soft-toggle-field">
+                        <span class="soft-label">System Active</span>
+                        <label class="soft-toggle">
+                            <input type="checkbox" checked>
+                            <span class="toggle-track">
+                                <span class="toggle-thumb"></span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Credentials Tab -->
+            <div id="credentials" class="tab-content">
+                <div class="soft-card">
+                    <div class="card-icon">🔐</div>
+                    <h2 class="card-title">API Credentials</h2>
+                    
+                    <div class="soft-field">
+                        <label class="soft-label">OpenAI API Key</label>
+                        <div class="input-group">
+                            <input type="password" class="soft-input" id="openai-api-key" name="openai_api_key" placeholder="sk-...">
+                            <button type="button" class="input-button" onclick="togglePassword('openai-api-key')">Show</button>
+                        </div>
+                    </div>
+                    
+                    <div class="soft-field">
+                        <label class="soft-label">Anthropic API Key</label>
+                        <div class="input-group">
+                            <input type="password" class="soft-input" id="anthropic-api-key" name="anthropic_api_key" placeholder="sk-ant-...">
+                            <button type="button" class="input-button" onclick="togglePassword('anthropic-api-key')">Show</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Models Tab -->
+            <div id="models" class="tab-content">
+                <div class="soft-card">
+                    <div class="card-icon">🧠</div>
+                    <h2 class="card-title">Embedding Model</h2>
+                    
+                    <div class="soft-field">
+                        <label class="soft-label">Model Selection</label>
+                        <select class="soft-select" id="embedding-model" name="embedding_model">
+                            <option value="text-embedding-3-small">OpenAI 3 Small - Fast</option>
+                            <option value="text-embedding-3-large">OpenAI 3 Large - Accurate</option>
+                            <option value="text-embedding-ada-002">OpenAI Ada 002</option>
+                        </select>
+                    </div>
+                    
+                    <div class="soft-slider-field">
+                        <div class="slider-header">
+                            <label class="soft-label">Max Tokens per Chunk</label>
+                            <span class="slider-value" id="max-tokens-value">512</span>
+                        </div>
+                        <input type="range" class="soft-slider" id="max-tokens" name="max_tokens" min="100" max="2000" value="512">
+                    </div>
+                </div>
+                
+                <div class="soft-card">
+                    <div class="card-icon">💬</div>
+                    <h2 class="card-title">Generation Model</h2>
+                    
+                    <div class="soft-field">
+                        <label class="soft-label">Claude Model</label>
+                        <select class="soft-select" id="generation-model" name="generation_model">
+                            <option value="claude-opus-4-20250514">Claude Opus 4</option>
+                            <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+                            <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="soft-field">
+                            <label class="soft-label">Max Response Tokens</label>
+                            <input type="number" class="soft-input" id="generation-max-tokens" name="generation_max_tokens" value="4096">
+                        </div>
+                        <div class="soft-slider-field">
+                            <div class="slider-header">
+                                <label class="soft-label">Temperature</label>
+                                <span class="slider-value" id="temperature-value">0.1</span>
+                            </div>
+                            <input type="range" class="soft-slider" id="temperature" name="temperature" min="0" max="1" step="0.01" value="0.1">
+                        </div>
+                    </div>
+                    
+                    <div class="soft-toggle-field" id="hybrid-mode-field" style="display: none;">
+                        <span class="soft-label">Enable Hybrid Mode</span>
+                        <label class="soft-toggle">
+                            <input type="checkbox" id="enable-hybrid-mode" name="enable_hybrid_mode">
+                            <span class="toggle-track">
+                                <span class="toggle-thumb"></span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Tab -->
+            <div id="search" class="tab-content">
+                <div class="soft-card">
+                    <div class="card-icon">🔍</div>
+                    <h2 class="card-title">Search Configuration</h2>
+                    
+                    <div class="form-grid">
+                        <div class="soft-field">
+                            <label class="soft-label">Top K Results</label>
+                            <input type="number" class="soft-input" id="top-k" name="top_k" value="50">
+                        </div>
+                        <div class="soft-field">
+                            <label class="soft-label">Rerank Top N</label>
+                            <input type="number" class="soft-input" id="rerank-top-n" name="rerank_top_n" value="25">
+                        </div>
+                    </div>
+                    
+                    <div class="soft-toggle-field">
+                        <span class="soft-label">Enable Hybrid Search</span>
+                        <label class="soft-toggle">
+                            <input type="checkbox" id="use-hybrid-search" name="use_hybrid_search" checked>
+                            <span class="toggle-track">
+                                <span class="toggle-thumb"></span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Integration Tab -->
+            <div id="integration" class="tab-content">
+                <div class="soft-card">
+                    <div class="card-icon">💬</div>
+                    <h2 class="card-title">Mattermost Integration</h2>
+                    
+                    <div class="soft-field">
+                        <label class="soft-label">Server URL</label>
+                        <input type="url" class="soft-input" id="mattermost-url" name="mattermost_url" placeholder="https://your-mattermost.com">
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="soft-field">
+                            <label class="soft-label">Personal Access Token</label>
+                            <input type="password" class="soft-input" id="mattermost-pat" name="mattermost_personal_access_token" placeholder="Token">
+                        </div>
+                        <div class="soft-field">
+                            <label class="soft-label">/inject Command Token</label>
+                            <input type="password" class="soft-input" id="inject-token" name="mattermost_inject_token" placeholder="Token">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <button type="button" class="soft-button" onclick="loadConfig()">
+                <span>↻ Refresh</span>
+            </button>
+            <button type="submit" class="soft-button primary" form="config-form">
+                <span>✓ Save Configuration</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div id="notification" class="soft-notification">
+        <div class="notification-icon">✓</div>
+        <span id="notification-text">Configuration saved successfully!</span>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Tab switching
+        function showTab(tabId) {
+            // Update pills
+            document.querySelectorAll('.nav-pill').forEach(pill => {
+                pill.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Update slider values
+        document.querySelectorAll('.soft-slider').forEach(input => {
+            const valueDisplay = document.getElementById(input.id + '-value');
+            if (valueDisplay) {
+                input.addEventListener('input', () => {
+                    valueDisplay.textContent = input.value;
+                });
+            }
+        });
+        
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const button = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                button.textContent = 'Show';
+            }
+        }
+        
+        function showNotification(text) {
+            const notification = document.getElementById('notification');
+            document.getElementById('notification-text').textContent = text;
+            notification.style.display = 'flex';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Populate fields
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    document.getElementById('max-tokens').value = config.embedding.max_tokens || 512;
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    document.getElementById('use-hybrid-search').checked = config.retrieval.use_hybrid_search !== false;
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                    document.getElementById('temperature').value = config.generation.temperature || 0.1;
+                }
+                
+                // Update slider displays
+                document.querySelectorAll('.soft-slider').forEach(input => {
+                    const valueDisplay = document.getElementById(input.id + '-value');
+                    if (valueDisplay) {
+                        valueDisplay.textContent = input.value;
+                    }
+                });
+                
+                showNotification('Configuration loaded successfully');
+            } catch (error) {
+                showNotification('Failed to load configuration');
+            }
+        }
+        
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showNotification('Configuration saved successfully!');
+        });
+        
+        // Handle model selection
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const hybridField = document.getElementById('hybrid-mode-field');
+            if (e.target.value.includes('claude-opus-4') || e.target.value.includes('claude-sonnet-4')) {
+                hybridField.style.display = 'flex';
+            } else {
+                hybridField.style.display = 'none';
+                document.getElementById('enable-hybrid-mode').checked = false;
+            }
+        });
+        
+        // Load on start
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            document.getElementById('generation-model').dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration - V2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --sidebar-width: 280px;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --success: #22c55e;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-medium: #1e293b;
+            --bg-light: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-medium);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .nav-menu {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-section-title {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+        
+        .nav-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary-light);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .top-bar {
+            background: var(--bg-medium);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .top-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-dark);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .icon-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background: var(--bg-dark);
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Form Styles */
+        .form-section {
+            background: var(--bg-medium);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-section-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-section-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .form-input,
+        .form-select {
+            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-help {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        /* Input Addons */
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-addon {
+            position: absolute;
+            right: 0.75rem;
+            padding: 0.375rem 0.75rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .input-addon:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Toggle Switch */
+        .toggle-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        
+        .toggle-info {
+            flex: 1;
+        }
+        
+        .toggle-label {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .toggle-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-light);
+            border-radius: 999px;
+            transition: all 0.3s;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        input:checked + .toggle-slider {
+            background: var(--primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* Slider Input */
+        .slider-field {
+            margin-bottom: 1rem;
+        }
+        
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .slider-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .slider-input {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--bg-light);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .slider-input::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* Action Buttons */
+        .actions-bar {
+            position: sticky;
+            bottom: 0;
+            background: var(--bg-medium);
+            border-top: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-dark);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Alert */
+        .alert {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .alert-error {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                height: 100%;
+                z-index: 100;
+                transition: left 0.3s;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">RAG Control Center</div>
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span>System Online</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">Core Settings</div>
+                    <button class="nav-item active" onclick="showSection('api-keys')">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        API Keys
+                    </button>
+                    <button class="nav-item" onclick="showSection('mattermost')">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                        </svg>
+                        Mattermost
+                    </button>
+                    <button class="nav-item" onclick="showSection('embedding')">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633z" clip-rule="evenodd"/>
+                        </svg>
+                        Embedding
+                    </button>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Pipeline Settings</div>
+                    <button class="nav-item" onclick="showSection('retrieval')">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                        </svg>
+                        Retrieval
+                    </button>
+                    <button class="nav-item" onclick="showSection('generation')">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                        </svg>
+                        Generation
+                    </button>
+                    <button class="nav-item" onclick="showSection('processing')">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947z" clip-rule="evenodd"/>
+                        </svg>
+                        Processing
+                    </button>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">System</div>
+                    <button class="nav-item" onclick="showSection('database')">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+                            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+                            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+                        </svg>
+                        Database
+                    </button>
+                    <button class="nav-item" onclick="showSection('monitoring')">
+                        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/>
+                            <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/>
+                        </svg>
+                        Monitoring
+                    </button>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="page-title" id="page-title">API Keys Configuration</h1>
+                <div class="top-actions">
+                    <button class="icon-btn" onclick="loadConfig()">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <button class="icon-btn">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="content-area">
+                <form id="config-form">
+                    <!-- API Keys Section -->
+                    <div id="api-keys" class="content-section active">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">OpenAI Status</div>
+                                <div class="stat-value">Active</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Anthropic Status</div>
+                                <div class="stat-value">Active</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Total API Calls</div>
+                                <div class="stat-value">1,247</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h2 class="form-section-title">API Key Configuration</h2>
+                                <p class="form-section-desc">Configure your AI provider API keys for embeddings and generation</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">OpenAI API Key</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-input" id="openai-api-key" name="openai_api_key" placeholder="sk-..." style="padding-right: 4rem;">
+                                    <span class="input-addon" onclick="togglePassword('openai-api-key')">Show</span>
+                                </div>
+                                <span class="form-help">Used for text embeddings and vector search</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Anthropic API Key</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-input" id="anthropic-api-key" name="anthropic_api_key" placeholder="sk-ant-..." style="padding-right: 4rem;">
+                                    <span class="input-addon" onclick="togglePassword('anthropic-api-key')">Show</span>
+                                </div>
+                                <span class="form-help">Used for Claude-powered generation</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mattermost Section -->
+                    <div id="mattermost" class="content-section">
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h2 class="form-section-title">Mattermost Connection</h2>
+                                <p class="form-section-desc">Configure your Mattermost server and authentication</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Server URL</label>
+                                <input type="url" class="form-input" id="mattermost-url" name="mattermost_url" placeholder="https://your-mattermost.com">
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Personal Access Token</label>
+                                    <input type="password" class="form-input" id="mattermost-pat" name="mattermost_personal_access_token">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">/inject Command Token</label>
+                                    <input type="password" class="form-input" id="inject-token" name="mattermost_inject_token">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">/ask Command Token</label>
+                                    <input type="password" class="form-input" id="ask-token" name="mattermost_ask_token">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Embedding Section -->
+                    <div id="embedding" class="content-section">
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h2 class="form-section-title">Embedding Configuration</h2>
+                                <p class="form-section-desc">Configure how documents are converted to vector embeddings</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Embedding Model</label>
+                                <select class="form-select" id="embedding-model" name="embedding_model">
+                                    <option value="text-embedding-3-small">OpenAI 3 Small (Fast & Efficient)</option>
+                                    <option value="text-embedding-3-large">OpenAI 3 Large (High Accuracy)</option>
+                                    <option value="text-embedding-ada-002">OpenAI Ada 002 (Legacy)</option>
+                                </select>
+                            </div>
+                            <div class="slider-field">
+                                <div class="slider-header">
+                                    <label class="form-label">Max Tokens per Chunk</label>
+                                    <span class="slider-value" id="max-tokens-value">512</span>
+                                </div>
+                                <input type="range" class="slider-input" id="max-tokens" name="max_tokens" min="100" max="2000" value="512">
+                                <span class="form-help">Controls the size of text chunks for processing</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Retrieval Section -->
+                    <div id="retrieval" class="content-section">
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h2 class="form-section-title">Basic Retrieval Settings</h2>
+                                <p class="form-section-desc">Configure how documents are searched and ranked</p>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Top K Results</label>
+                                    <input type="number" class="form-input" id="top-k" name="top_k" value="50">
+                                    <span class="form-help">Initial retrieval count</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Rerank Top N</label>
+                                    <input type="number" class="form-input" id="rerank-top-n" name="rerank_top_n" value="25">
+                                    <span class="form-help">Final results after reranking</span>
+                                </div>
+                            </div>
+                            <div class="toggle-field">
+                                <div class="toggle-info">
+                                    <div class="toggle-label">Enable Hybrid Search</div>
+                                    <div class="toggle-desc">Combines vector and keyword search for better results</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="use-hybrid-search" name="use_hybrid_search" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h2 class="form-section-title">Advanced Retrieval</h2>
+                                <p class="form-section-desc">Fine-tune search algorithm parameters</p>
+                            </div>
+                            <div class="form-grid">
+                                <div class="slider-field">
+                                    <div class="slider-header">
+                                        <label class="form-label">Vector Weight</label>
+                                        <span class="slider-value" id="vector-weight-value">0.7</span>
+                                    </div>
+                                    <input type="range" class="slider-input" id="vector-weight" name="vector_weight" min="0" max="1" step="0.1" value="0.7">
+                                </div>
+                                <div class="slider-field">
+                                    <div class="slider-header">
+                                        <label class="form-label">BM25 Weight</label>
+                                        <span class="slider-value" id="bm25-weight-value">0.3</span>
+                                    </div>
+                                    <input type="range" class="slider-input" id="bm25-weight" name="bm25_weight" min="0" max="1" step="0.1" value="0.3">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Generation Section -->
+                    <div id="generation" class="content-section">
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h2 class="form-section-title">Claude Generation Settings</h2>
+                                <p class="form-section-desc">Configure AI response generation parameters</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Claude Model</label>
+                                <select class="form-select" id="generation-model" name="generation_model">
+                                    <option value="claude-opus-4-20250514">Claude Opus 4 (Latest)</option>
+                                    <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (Fast)</option>
+                                    <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                                    <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                                </select>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Max Response Tokens</label>
+                                    <input type="number" class="form-input" id="generation-max-tokens" name="generation_max_tokens" value="4096">
+                                    <span class="form-help">Opus 4: 32K, Sonnet 4: 64K</span>
+                                </div>
+                                <div class="slider-field">
+                                    <div class="slider-header">
+                                        <label class="form-label">Temperature</label>
+                                        <span class="slider-value" id="temperature-value">0.1</span>
+                                    </div>
+                                    <input type="range" class="slider-input" id="temperature" name="temperature" min="0" max="1" step="0.01" value="0.1">
+                                </div>
+                            </div>
+                            <div class="toggle-field" id="hybrid-mode-field">
+                                <div class="toggle-info">
+                                    <div class="toggle-label">Enable Hybrid Mode</div>
+                                    <div class="toggle-desc">Claude 4 only - Enables extended thinking for complex reasoning</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="enable-hybrid-mode" name="enable_hybrid_mode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Other sections would continue in the same pattern -->
+                </form>
+            </div>
+            
+            <div class="actions-bar">
+                <button type="button" class="btn btn-secondary" onclick="loadConfig()">Reset Changes</button>
+                <button type="submit" class="btn btn-primary" form="config-form">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Save Configuration
+                </button>
+            </div>
+        </main>
+    </div>
+    
+    <div id="alert" class="alert"></div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Navigation
+        function showSection(sectionId) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Update sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update page title
+            const titles = {
+                'api-keys': 'API Keys Configuration',
+                'mattermost': 'Mattermost Integration',
+                'embedding': 'Embedding Configuration',
+                'retrieval': 'Retrieval Settings',
+                'generation': 'Generation Settings',
+                'processing': 'Channel Processing',
+                'database': 'Database Configuration',
+                'monitoring': 'Monitoring & Analytics'
+            };
+            document.getElementById('page-title').textContent = titles[sectionId] || 'Configuration';
+        }
+        
+        // Update slider values
+        document.querySelectorAll('.slider-input').forEach(input => {
+            const valueDisplay = document.getElementById(input.id + '-value');
+            if (valueDisplay) {
+                input.addEventListener('input', () => {
+                    valueDisplay.textContent = input.value;
+                });
+            }
+        });
+        
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.display = 'flex';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const button = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                button.textContent = 'Show';
+            }
+        }
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Populate form fields
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    document.getElementById('max-tokens').value = config.embedding.max_tokens || 512;
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    document.getElementById('use-hybrid-search').checked = config.retrieval.use_hybrid_search !== false;
+                    document.getElementById('vector-weight').value = config.retrieval.vector_weight || 0.7;
+                    document.getElementById('bm25-weight').value = config.retrieval.bm25_weight || 0.3;
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                    document.getElementById('temperature').value = config.generation.temperature || 0.1;
+                }
+                
+                // Update slider displays
+                document.querySelectorAll('.slider-input').forEach(input => {
+                    const valueDisplay = document.getElementById(input.id + '-value');
+                    if (valueDisplay) {
+                        valueDisplay.textContent = input.value;
+                    }
+                });
+                
+                showAlert('Configuration loaded successfully', 'success');
+            } catch (error) {
+                showAlert('Failed to load configuration: ' + error.message, 'error');
+            }
+        }
+        
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            // Save logic here
+            showAlert('Configuration saved successfully!', 'success');
+        });
+        
+        // Handle model selection
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const hybridField = document.getElementById('hybrid-mode-field');
+            if (e.target.value.includes('claude-opus-4') || e.target.value.includes('claude-sonnet-4')) {
+                hybridField.style.display = 'flex';
+            } else {
+                hybridField.style.display = 'none';
+                document.getElementById('enable-hybrid-mode').checked = false;
+            }
+        });
+        
+        // Load on start
+        window.addEventListener('DOMContentLoaded', loadConfig);
+    </script>
+</body>
+</html>

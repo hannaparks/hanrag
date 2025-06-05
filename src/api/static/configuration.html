@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Configuration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+            color: white;
+            padding: 16px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+        }
+        
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .alert-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .config-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s;
+        }
+        
+        .config-section:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .config-section h2 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-icon {
+            width: 16px;
+            height: 16px;
+            color: #3b82f6;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        .form-group label {
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #475569;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: all 0.15s;
+            background-color: #ffffff;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-group small {
+            margin-top: 2px;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+        
+        .input-group {
+            position: relative;
+            display: flex;
+        }
+        
+        .input-group input {
+            padding-right: 60px;
+            flex: 1;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            cursor: pointer;
+            padding: 2px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            transition: all 0.15s;
+        }
+        
+        .toggle-password:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            font-size: 13px;
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px 0;
+        }
+        
+        .btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-save {
+            background-color: #10b981;
+        }
+        
+        .btn-save:hover {
+            background-color: #059669;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+        }
+        
+        /* Full width sections */
+        .full-width-section {
+            grid-column: span 2;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .full-width-section {
+                grid-column: span 1;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .status-info {
+                font-size: 12px;
+            }
+        }
+        
+        /* Icons */
+        .icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>RAG System Configuration</h1>
+            <div class="status-info">
+                <div class="status-badge">
+                    <span id="status-indicator" class="status-indicator"></span>
+                    <span id="environment"></span>
+                </div>
+                <div class="status-badge">
+                    <span id="mattermost-url"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div id="alert" class="alert"></div>
+        
+        <form id="config-form">
+            <div class="config-grid">
+                <!-- API Keys Section -->
+                <div class="config-section">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        API Keys
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="openai-api-key">OpenAI API Key</label>
+                            <div class="input-group">
+                                <input type="password" id="openai-api-key" name="openai_api_key" placeholder="sk-...">
+                                <button type="button" class="toggle-password" onclick="togglePassword('openai-api-key')">Show</button>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="anthropic-api-key">Anthropic API Key</label>
+                            <div class="input-group">
+                                <input type="password" id="anthropic-api-key" name="anthropic_api_key" placeholder="sk-ant-...">
+                                <button type="button" class="toggle-password" onclick="togglePassword('anthropic-api-key')">Show</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mattermost Settings -->
+                <div class="config-section">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+                        </svg>
+                        Mattermost Settings
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="mattermost-url-input">Mattermost URL</label>
+                            <input type="url" id="mattermost-url-input" name="mattermost_url" placeholder="https://your-mattermost.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="mattermost-pat">Personal Access Token</label>
+                            <div class="input-group">
+                                <input type="password" id="mattermost-pat" name="mattermost_personal_access_token" placeholder="Token">
+                                <button type="button" class="toggle-password" onclick="togglePassword('mattermost-pat')">Show</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inject-token">/inject Token</label>
+                            <div class="input-group">
+                                <input type="password" id="inject-token" name="mattermost_inject_token" placeholder="Token">
+                                <button type="button" class="toggle-password" onclick="togglePassword('inject-token')">Show</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ask-token">/ask Token</label>
+                            <div class="input-group">
+                                <input type="password" id="ask-token" name="mattermost_ask_token" placeholder="Token">
+                                <button type="button" class="toggle-password" onclick="togglePassword('ask-token')">Show</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Embedding Configuration -->
+                <div class="config-section">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                        Embedding Configuration
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="embedding-model">Embedding Model</label>
+                            <select id="embedding-model" name="embedding_model">
+                                <option value="text-embedding-3-small">text-embedding-3-small (1536 dims)</option>
+                                <option value="text-embedding-3-large">text-embedding-3-large (3072 dims)</option>
+                                <option value="text-embedding-ada-002">text-embedding-ada-002 (1536 dims)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="max-tokens">Max Tokens</label>
+                            <input type="number" id="max-tokens" name="max_tokens" min="100" max="2000" value="512">
+                            <small>Tokens per chunk</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Retrieval Configuration -->
+                <div class="config-section">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                        </svg>
+                        Retrieval Configuration
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="top-k">Top K Results</label>
+                            <input type="number" id="top-k" name="top_k" min="1" max="100" value="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="rerank-top-n">Rerank Top N</label>
+                            <input type="number" id="rerank-top-n" name="rerank_top_n" min="1" max="50" value="25">
+                        </div>
+                        <div class="form-group">
+                            <label for="mmr-lambda">MMR Lambda</label>
+                            <input type="number" id="mmr-lambda" name="mmr_lambda" min="0" max="1" step="0.1" value="0.7">
+                            <small>0=diverse, 1=relevant</small>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="use-hybrid-search" name="use_hybrid_search" checked>
+                            <label for="use-hybrid-search">Enable Hybrid Search</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Advanced Retrieval Settings -->
+                <div class="config-section">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"/>
+                        </svg>
+                        Advanced Retrieval
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="vector-weight">Vector Weight</label>
+                            <input type="number" id="vector-weight" name="vector_weight" min="0" max="1" step="0.1" value="0.7">
+                            <small>Hybrid search weight</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="bm25-weight">BM25 Weight</label>
+                            <input type="number" id="bm25-weight" name="bm25_weight" min="0" max="1" step="0.1" value="0.3">
+                            <small>Keyword search weight</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="rrf-k">RRF K</label>
+                            <input type="number" id="rrf-k" name="rrf_k" min="1" max="100" value="60">
+                            <small>Rank fusion param</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="min-score">Min Score</label>
+                            <input type="number" id="min-score" name="min_score" min="0" max="1" step="0.01" value="0">
+                            <small>Score threshold</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="bm25-k1">BM25 K1</label>
+                            <input type="number" id="bm25-k1" name="bm25_k1" min="0" max="3" step="0.1" value="1.2">
+                            <small>Term frequency</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="bm25-b">BM25 B</label>
+                            <input type="number" id="bm25-b" name="bm25_b" min="0" max="1" step="0.05" value="0.75">
+                            <small>Length normalization</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Channel Processing Settings -->
+                <div class="config-section">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"/>
+                        </svg>
+                        Channel Processing
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="conversation-gap">Conversation Gap</label>
+                            <input type="number" id="conversation-gap" name="conversation_gap" min="5" max="120" value="30">
+                            <small>Minutes between groups</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="max-group-size">Max Group Size</label>
+                            <input type="number" id="max-group-size" name="max_group_size" min="10" max="100" value="25">
+                            <small>Messages per group</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="chunk-overlap">Chunk Overlap</label>
+                            <input type="number" id="chunk-overlap" name="chunk_overlap" min="0" max="200" value="64">
+                            <small>Token overlap</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="parent-chunk-size">Parent Chunk Size</label>
+                            <input type="number" id="parent-chunk-size" name="parent_chunk_size" min="500" max="4000" value="1024">
+                            <small>Parent chunk tokens</small>
+                        </div>
+                        <div class="checkbox-group full-width">
+                            <input type="checkbox" id="preserve-threads" name="preserve_threads" checked>
+                            <label for="preserve-threads">Preserve Thread Structure</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generation Configuration -->
+                <div class="config-section full-width-section">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                        </svg>
+                        Generation Configuration
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="generation-model">Generation Model</label>
+                            <select id="generation-model" name="generation_model">
+                                <option value="claude-opus-4-20250514">Claude Opus 4 (Latest)</option>
+                                <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (Latest)</option>
+                                <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                                <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                                <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+                                <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="generation-max-tokens">Max Response Tokens</label>
+                            <input type="number" id="generation-max-tokens" name="generation_max_tokens" min="100" max="64000" value="4096">
+                            <small id="token-limit-hint">Max: 64000 for Claude Sonnet 4, 8192 for others</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="temperature">Temperature</label>
+                            <input type="number" id="temperature" name="temperature" min="0" max="1" step="0.01" value="0.1">
+                            <small>0=deterministic, 1=creative</small>
+                        </div>
+                    </div>
+                    <div class="checkbox-group full-width" id="hybrid-mode-group" style="display: none;">
+                        <input type="checkbox" id="enable-hybrid-mode" name="enable_hybrid_mode">
+                        <label for="enable-hybrid-mode">
+                            Enable Hybrid Mode with Extended Thinking
+                            <small style="display: block; margin-left: 22px; color: #64748b;">
+                                Claude 4 only - Enables deeper reasoning by allowing the model to think step-by-step before responding
+                            </small>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Database & Server Settings -->
+                <div class="config-section">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+                            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+                            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+                        </svg>
+                        Database & Server
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="qdrant-host">Qdrant Host</label>
+                            <input type="text" id="qdrant-host" name="qdrant_host" value="localhost">
+                        </div>
+                        <div class="form-group">
+                            <label for="qdrant-port">Qdrant Port</label>
+                            <input type="number" id="qdrant-port" name="qdrant_port" value="6333">
+                        </div>
+                        <div class="form-group">
+                            <label for="collection-name">Collection Name</label>
+                            <input type="text" id="collection-name" name="collection_name" value="documents">
+                        </div>
+                        <div class="form-group">
+                            <label for="server-port">Server Port</label>
+                            <input type="number" id="server-port" name="server_port" value="8000">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Settings -->
+                <div class="config-section">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                        </svg>
+                        System Settings
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="theme-selector">Theme</label>
+                            <select id="theme-selector" name="theme">
+                                <option value="default">Default Theme</option>
+                                <option value="v1">Modern Card-Based Design</option>
+                                <option value="v2">Dark Sidebar Navigation</option>
+                                <option value="v3">Minimalist Single-Page</option>
+                                <option value="v4">Terminal/CLI-Inspired</option>
+                                <option value="v5">Glassmorphism/iOS-Inspired</option>
+                                <option value="v6">Material Design 3</option>
+                                <option value="v7">Neomorphism/Soft UI</option>
+                                <option value="v8">Brutalist/Bold Typography</option>
+                                <option value="v9">Cyberpunk/Neon</option>
+                                <option value="v10">Newspaper/Editorial</option>
+                                <option value="v11">Retro/Vintage Computer</option>
+                                <option value="v12">Gaming/Esports</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="log-level">Log Level</label>
+                            <select id="log-level" name="log_level">
+                                <option value="DEBUG">DEBUG</option>
+                                <option value="INFO" selected>INFO</option>
+                                <option value="WARNING">WARNING</option>
+                                <option value="ERROR">ERROR</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button type="button" class="btn" onclick="loadConfig()">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                    </svg>
+                    Refresh
+                </button>
+                <button type="submit" class="btn btn-save">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Save Configuration
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const button = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                button.textContent = 'Show';
+            }
+        }
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config`);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                
+                const config = await response.json();
+                
+                // Update status
+                document.getElementById('environment').textContent = config.environment;
+                document.getElementById('mattermost-url').textContent = config.mattermost_url || 'Not configured';
+                document.getElementById('status-indicator').className = 'status-indicator';
+                
+                // Update form fields
+                if (config.embedding) {
+                    document.getElementById('embedding-model').value = config.embedding.model || '';
+                    document.getElementById('max-tokens').value = config.embedding.max_tokens || 512;
+                }
+                
+                if (config.retrieval) {
+                    document.getElementById('top-k').value = config.retrieval.top_k || 50;
+                    document.getElementById('rerank-top-n').value = config.retrieval.rerank_top_n || 25;
+                    document.getElementById('mmr-lambda').value = config.retrieval.mmr_lambda || 0.7;
+                    document.getElementById('use-hybrid-search').checked = config.retrieval.use_hybrid_search !== false;
+                    
+                    // Advanced retrieval settings
+                    document.getElementById('vector-weight').value = config.retrieval.vector_weight || 0.7;
+                    document.getElementById('bm25-weight').value = config.retrieval.bm25_weight || 0.3;
+                    document.getElementById('rrf-k').value = config.retrieval.rrf_k || 60;
+                    document.getElementById('min-score').value = config.retrieval.min_score_threshold || 0;
+                    document.getElementById('bm25-k1').value = config.retrieval.bm25_k1 || 1.2;
+                    document.getElementById('bm25-b').value = config.retrieval.bm25_b || 0.75;
+                }
+                
+                if (config.generation) {
+                    document.getElementById('generation-model').value = config.generation.model || '';
+                    document.getElementById('generation-max-tokens').value = config.generation.max_tokens || 4096;
+                    document.getElementById('temperature').value = config.generation.temperature || 0.1;
+                    document.getElementById('enable-hybrid-mode').checked = config.generation.enable_hybrid_mode || false;
+                }
+                
+                // API Keys (will be masked)
+                if (config.openai_api_key) {
+                    document.getElementById('openai-api-key').value = config.openai_api_key;
+                }
+                if (config.anthropic_api_key) {
+                    document.getElementById('anthropic-api-key').value = config.anthropic_api_key;
+                }
+                
+                // Mattermost settings
+                if (config.mattermost_url) {
+                    document.getElementById('mattermost-url-input').value = config.mattermost_url;
+                }
+                if (config.mattermost_personal_access_token) {
+                    document.getElementById('mattermost-pat').value = config.mattermost_personal_access_token;
+                }
+                if (config.mattermost_inject_token) {
+                    document.getElementById('inject-token').value = config.mattermost_inject_token;
+                }
+                if (config.mattermost_ask_token) {
+                    document.getElementById('ask-token').value = config.mattermost_ask_token;
+                }
+                
+                // Channel processing settings
+                if (config.channel_processing) {
+                    document.getElementById('conversation-gap').value = config.channel_processing.conversation_gap_minutes || 30;
+                    document.getElementById('max-group-size').value = config.channel_processing.max_group_size || 25;
+                    document.getElementById('chunk-overlap').value = config.channel_processing.chunk_overlap || 64;
+                    document.getElementById('parent-chunk-size').value = config.channel_processing.parent_chunk_size || 1024;
+                    document.getElementById('preserve-threads').checked = config.channel_processing.preserve_threads !== false;
+                }
+                
+                // Database settings
+                if (config.database) {
+                    document.getElementById('qdrant-host').value = config.database.qdrant_host || 'localhost';
+                    document.getElementById('qdrant-port').value = config.database.qdrant_port || 6333;
+                    document.getElementById('collection-name').value = config.database.collection_name || 'documents';
+                }
+                
+                // Server settings
+                if (config.server) {
+                    document.getElementById('server-port').value = config.server.port || 8000;
+                }
+                
+                // System settings
+                if (config.system) {
+                    document.getElementById('log-level').value = config.system.log_level || 'INFO';
+                }
+                
+            } catch (error) {
+                showAlert('Failed to load configuration: ' + error.message, 'error');
+            }
+        }
+        
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const config = {
+                embedding: {
+                    model: formData.get('embedding_model'),
+                    max_tokens: parseInt(formData.get('max_tokens'))
+                },
+                retrieval: {
+                    top_k: parseInt(formData.get('top_k')),
+                    rerank_top_n: parseInt(formData.get('rerank_top_n')),
+                    mmr_lambda: parseFloat(formData.get('mmr_lambda')),
+                    use_hybrid_search: formData.has('use_hybrid_search'),
+                    vector_weight: parseFloat(formData.get('vector_weight')),
+                    bm25_weight: parseFloat(formData.get('bm25_weight')),
+                    rrf_k: parseInt(formData.get('rrf_k')),
+                    min_score_threshold: parseFloat(formData.get('min_score')),
+                    bm25_k1: parseFloat(formData.get('bm25_k1')),
+                    bm25_b: parseFloat(formData.get('bm25_b'))
+                },
+                generation: {
+                    model: formData.get('generation_model'),
+                    max_tokens: parseInt(formData.get('generation_max_tokens')),
+                    temperature: parseFloat(formData.get('temperature')),
+                    enable_hybrid_mode: formData.has('enable_hybrid_mode')
+                },
+                channel_processing: {
+                    conversation_gap_minutes: parseInt(formData.get('conversation_gap')),
+                    max_group_size: parseInt(formData.get('max_group_size')),
+                    chunk_overlap: parseInt(formData.get('chunk_overlap')),
+                    parent_chunk_size: parseInt(formData.get('parent_chunk_size')),
+                    preserve_threads: formData.has('preserve_threads')
+                },
+                database: {
+                    qdrant_host: formData.get('qdrant_host'),
+                    qdrant_port: parseInt(formData.get('qdrant_port')),
+                    collection_name: formData.get('collection_name')
+                },
+                server: {
+                    port: parseInt(formData.get('server_port'))
+                },
+                system: {
+                    log_level: formData.get('log_level')
+                },
+                openai_api_key: formData.get('openai_api_key'),
+                anthropic_api_key: formData.get('anthropic_api_key'),
+                mattermost_url: formData.get('mattermost_url'),
+                mattermost_personal_access_token: formData.get('mattermost_personal_access_token'),
+                mattermost_inject_token: formData.get('mattermost_inject_token'),
+                mattermost_ask_token: formData.get('mattermost_ask_token')
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/config/ui`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(config)
+                });
+                
+                if (!response.ok) {
+                    let errorMessage = 'Failed to save configuration';
+                    try {
+                        const error = await response.json();
+                        console.error('Error response:', error);
+                        
+                        if (error.detail) {
+                            errorMessage = error.detail;
+                        } else if (error.error) {
+                            errorMessage = error.error;
+                        } else if (error.message) {
+                            errorMessage = error.message;
+                        } else if (Array.isArray(error)) {
+                            errorMessage = error.map(e => e.msg || e.message || JSON.stringify(e)).join(', ');
+                        } else {
+                            errorMessage = JSON.stringify(error);
+                        }
+                    } catch (parseError) {
+                        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                const result = await response.json();
+                showAlert(result.message || 'Configuration saved successfully!', 'success');
+                await loadConfig();
+            } catch (error) {
+                console.error('Save error:', error);
+                showAlert('Failed to save configuration: ' + error.message, 'error');
+            }
+        });
+        
+        // Handle model selection change to show/hide hybrid mode and update token limits
+        document.getElementById('generation-model').addEventListener('change', function(e) {
+            const selectedModel = e.target.value;
+            const hybridModeGroup = document.getElementById('hybrid-mode-group');
+            const tokenInput = document.getElementById('generation-max-tokens');
+            const tokenHint = document.getElementById('token-limit-hint');
+            
+            // Show hybrid mode checkbox only for Claude 4 models
+            if (selectedModel.includes('claude-opus-4') || selectedModel.includes('claude-sonnet-4')) {
+                hybridModeGroup.style.display = 'block';
+                
+                // Update token limits for Claude 4 models
+                tokenInput.max = '64000';
+                tokenHint.textContent = 'Max: 64000 tokens for Claude 4 models';
+                
+                // If current value exceeds new max, set to max
+                if (parseInt(tokenInput.value) > 64000) {
+                    tokenInput.value = '64000';
+                }
+            } else {
+                hybridModeGroup.style.display = 'none';
+                // Uncheck if hidden
+                document.getElementById('enable-hybrid-mode').checked = false;
+                
+                // Update token limits for other models
+                tokenInput.max = '8192';
+                tokenHint.textContent = 'Max: 8192 tokens for this model';
+                
+                // If current value exceeds new max, set to max
+                if (parseInt(tokenInput.value) > 8192) {
+                    tokenInput.value = '8192';
+                }
+            }
+        });
+        
+        // Theme switching functionality
+        function switchTheme(theme) {
+            if (theme === 'default') {
+                // Stay on current page
+                return;
+            }
+            
+            // Redirect to the selected theme configuration page
+            const themeUrl = `/configuration_${theme}.html`;
+            window.location.href = themeUrl;
+        }
+        
+        // Handle theme selector change
+        document.getElementById('theme-selector').addEventListener('change', function(e) {
+            const selectedTheme = e.target.value;
+            if (selectedTheme !== 'default') {
+                if (confirm('Switch to ' + e.target.options[e.target.selectedIndex].text + '? You will be redirected to the new theme.')) {
+                    switchTheme(selectedTheme);
+                } else {
+                    // Reset to default if user cancels
+                    e.target.value = 'default';
+                }
+            }
+        });
+        
+        // Load configuration on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            // Trigger change event to set initial state
+            document.getElementById('generation-model').dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>
